@@ -1,5 +1,6 @@
 package com.mythichelm.localnotifications;
 
+import android.util.Log;
 import android.app.Notification;
 import android.app.Notification.*;
 import android.app.NotificationManager;
@@ -15,6 +16,7 @@ import android.os.AsyncTask;
 import java.io.*;
 import java.net.*;
 import android.content.pm.PackageManager;
+import java.util.List;
 
 public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitmap> {
     private Context mContext;
@@ -22,9 +24,13 @@ public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitma
     private String title, content, imageUrl, ticker;
     private int importance;
     private boolean isOngoing;
+    private NotificationAction onNotificationClick;
+    private List<NotificationAction> extraActions;
 
     public GenerateLocalNotificationTask(Context context, int id, String title, String content,
-                                         String imageUrl, String ticker, int importance, boolean isOngoing) {
+                                         String imageUrl, String ticker, int importance, boolean isOngoing,
+                                         NotificationAction onNotificationClick,
+                                         List<NotificationAction> extraActions) {
         super();
         this.mContext = context;
         this.id = id;
@@ -34,6 +40,8 @@ public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitma
         this.ticker = ticker;
         this.importance = importance;
         this.isOngoing = isOngoing;
+        this.onNotificationClick = onNotificationClick;
+        this.extraActions = extraActions;
     }
 
     @Override
@@ -59,36 +67,58 @@ public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitma
         return null;
     }
 
+    private PendingIntent getIntentForAction(NotificationAction action, int id) {
+        Intent actionIntent = this.mContext
+                .getPackageManager()
+                .getLaunchIntentForPackage(this.mContext.getPackageName());
+
+        // if its not an empty action, then it has a callback and payload
+        if (!action.isEmptyAction()) {
+            actionIntent.putExtra("callback_key", action.callbackFunctionName);
+            actionIntent.putExtra("payload_key", action.intentPayload);
+        }
+
+        PendingIntent actionpIntent = PendingIntent.getActivity(this.mContext, id,
+                actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return actionpIntent;
+    }
+
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
 
         try {
-            Intent notificationIntent = this.mContext
-                    .getPackageManager()
-                    .getLaunchIntentForPackage(this.mContext.getPackageName());
-
-            PendingIntent contentIntent = PendingIntent.getActivity(this.mContext, 0, notificationIntent, 0);
-
+            // Get this app's icon
             Drawable drawable = this.mContext
                     .getPackageManager()
                     .getApplicationIcon(this.mContext.getPackageName());
-
             Icon icon = Icon.createWithBitmap(((BitmapDrawable) drawable).getBitmap());
 
+            int nextNotificationId = 0;
+            PendingIntent onClickNotificationIntent = getIntentForAction(this.onNotificationClick, nextNotificationId++);
+
             Notification.Builder builder = new Notification.Builder(this.mContext)
-                    .setContentIntent(contentIntent)
+                    .setContentIntent(onClickNotificationIntent)
                     .setSmallIcon(icon)
                     .setContentTitle(this.title)
                     .setContentText(this.content)
                     .setOngoing(this.isOngoing);
 
+            // if an image was provided, result will contain the loaded image
             if (result != null) {
                 builder.setLargeIcon(result);
             }
 
             if (this.ticker != null) {
                 builder.setTicker(this.ticker);
+            }
+
+            // if any extra actions were provided
+            for (NotificationAction extraAction : this.extraActions) {
+                PendingIntent intent = getIntentForAction(extraAction, nextNotificationId++);
+                Action action = new Notification.Action.Builder(icon, extraAction.actionText, intent).build();
+                builder.addAction(action);
             }
 
             Notification notification = builder.build();

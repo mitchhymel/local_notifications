@@ -9,6 +9,7 @@ import android.content.Context;
 import android.app.NotificationManager;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * LocalNotificationsPlugin
@@ -57,7 +58,28 @@ public class LocalNotificationsPlugin implements MethodCallHandler {
     boolean isOngoing = (boolean)arguments.get(5);
     int id = (int)arguments.get(6);
 
-    new GenerateLocalNotificationTask(getActiveContext(), id, title, content, imageUrl, ticker, importance, isOngoing).execute();
+    // get onNotificationclick
+    String callbackName = (String)arguments.get(7);
+    String actionText = (String)arguments.get(8);
+    String intentPayload = (String)arguments.get(9);
+    NotificationAction onNotificationClick = new NotificationAction(callbackName, actionText, intentPayload);
+
+    // get extra actions
+    List<String> actionsCallbacks = (List<String>)arguments.get(10);
+    List<String> actionsTexts = (List<String>)arguments.get(11);
+    List<String> actionsIntentPayloads = (List<String>)arguments.get(12);
+    List<NotificationAction> extraActions = new ArrayList<NotificationAction>();
+    for (int i = 0; i < actionsCallbacks.size(); i++) {
+      String callback = actionsCallbacks.get(i);
+      String text = actionsTexts.get(i);
+      String payload = actionsIntentPayloads.get(i);
+      extraActions.add(new NotificationAction(callback, text, payload));
+    }
+
+    new GenerateLocalNotificationTask(getActiveContext(),
+            id, title, content, imageUrl, ticker, importance, isOngoing,
+            onNotificationClick, extraActions)
+            .execute();
     return id;
   }
 
