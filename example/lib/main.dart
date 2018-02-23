@@ -10,7 +10,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  static const channel = const MethodChannel('com.mythichelm.localnotificationsexample');
+  static const channel = const MethodChannel(LocalNotifications.CHANNEL_NAME);
 
   String _text;
 
@@ -42,6 +42,7 @@ class MyAppState extends State<MyApp> {
     setState(() {
       _text = 'in onReplyClick with payload: $payload';
     });
+    LocalNotifications.removeNotification(0);
   }
 
   Widget _getBasicNotification() {
@@ -108,6 +109,24 @@ class MyAppState extends State<MyApp> {
     );
   }
 
+  Widget _getNotificationWithCallbackAndPayloadInBackground() {
+    return new RaisedButton(
+      onPressed: () async {
+        int id = await LocalNotifications.createNotification(
+          'Callback and payload notif',
+          'Some content',
+          onNotificationClick: new NotificationAction(
+              "some action", // Note: action text gets ignored here, as android can't display this anywhere
+              "onNotificationClick",
+              "some payload without launching the app",
+            launchesApp: false
+          ),
+        );
+      },
+      child: new Text('Create notification that executes callback without launching app'),
+    );
+  }
+
   Widget _getNotificationWithMultipleActionsAndPayloads() {
     return new RaisedButton(
       onPressed: () async {
@@ -123,17 +142,20 @@ class MyAppState extends State<MyApp> {
               new NotificationAction(
                   "First",
                   "onReplyClick",
-                  "firstAction"
+                  "firstAction",
+                launchesApp: true
               ),
               new NotificationAction(
                   "Second",
                   "onReplyClick",
-                  "secondAction"
+                  "secondAction",
+                launchesApp: false
               ),
               new NotificationAction(
                   "Third",
                   "onReplyClick",
-                  "thirdAction"
+                  "thirdAction",
+                launchesApp: false
               ),
             ]
         );
@@ -157,6 +179,7 @@ class MyAppState extends State<MyApp> {
               _getUndismissableNotification(),
               _getRemoveNotification(),
               _getNotificationWithCallbackAndPayload(),
+              _getNotificationWithCallbackAndPayloadInBackground(),
               _getNotificationWithMultipleActionsAndPayloads(),
               new Text(_text ?? "Click a notification with a payload to see the results here")
             ],

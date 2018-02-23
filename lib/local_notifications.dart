@@ -6,14 +6,19 @@ class NotificationAction {
   final String callbackFunctionName;
   final String actionText;
   final String intentPayload;
-  const NotificationAction(this.actionText, this.callbackFunctionName, this.intentPayload);
+  final bool launchesApp;
+  const NotificationAction(this.actionText, this.callbackFunctionName, this.intentPayload, {this.launchesApp = true});
 
   static const NotificationAction DEFAULT = const NotificationAction('', '', '');
 }
 
 class LocalNotifications {
   static const MethodChannel _channel =
-      const MethodChannel('local_notifications');
+      const MethodChannel(CHANNEL_NAME);
+
+  static const String CHANNEL_NAME = 'plugins/local_notifications';
+  static const String _createNotification = 'local_notifications_createNotification';
+  static const String _removeNotification = 'local_notifications_removeNotification';
 
   static const int ANDROID_IMPORTANCE_DEFAULT = 3;
   static const int ANDROID_IMPORTANCE_HIGH = 4;
@@ -31,6 +36,7 @@ class LocalNotifications {
     List<String> callbacks = actions.map((action) => action.callbackFunctionName).toList();
     List<String> actionTexts = actions.map((action) => action.actionText).toList();
     List<String> intentPayloads = actions.map((action) => action.intentPayload).toList();
+    List<bool> launchesApps = actions.map((action) => action.launchesApp).toList();
 
     List args = [
       title,
@@ -43,15 +49,17 @@ class LocalNotifications {
       onNotificationClick.callbackFunctionName,
       onNotificationClick.actionText,
       onNotificationClick.intentPayload,
+      onNotificationClick.launchesApp,
       callbacks,
       actionTexts,
-      intentPayloads
+      intentPayloads,
+      launchesApps
     ];
-    return _channel.invokeMethod('createNotification', args);
+    return _channel.invokeMethod(_createNotification, args);
   }
 
   static Future<Null> removeNotification(int id) {
-    return _channel.invokeMethod('removeNotification', [id]);
+    return _channel.invokeMethod(_removeNotification, [id]);
   }
 }
 

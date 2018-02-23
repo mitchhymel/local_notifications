@@ -18,7 +18,7 @@ import java.net.*;
 import android.content.pm.PackageManager;
 import java.util.List;
 
-public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitmap> {
+public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitmap> {
     private Context mContext;
     private int id;
     private String title, content, imageUrl, ticker;
@@ -27,10 +27,10 @@ public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitma
     private NotificationAction onNotificationClick;
     private List<NotificationAction> extraActions;
 
-    public GenerateLocalNotificationTask(Context context, int id, String title, String content,
-                                         String imageUrl, String ticker, int importance, boolean isOngoing,
-                                         NotificationAction onNotificationClick,
-                                         List<NotificationAction> extraActions) {
+    public GenerateLocalNotificationsTask(Context context, int id, String title, String content,
+                                          String imageUrl, String ticker, int importance, boolean isOngoing,
+                                          NotificationAction onNotificationClick,
+                                          List<NotificationAction> extraActions) {
         super();
         this.mContext = context;
         this.id = id;
@@ -68,9 +68,15 @@ public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitma
     }
 
     private PendingIntent getIntentForAction(NotificationAction action, int id) {
-        Intent actionIntent = this.mContext
-                .getPackageManager()
-                .getLaunchIntentForPackage(this.mContext.getPackageName());
+        Intent actionIntent;
+        if (action.launchesApp) {
+            actionIntent = this.mContext
+                    .getPackageManager()
+                    .getLaunchIntentForPackage(this.mContext.getPackageName());
+        }
+        else {
+            actionIntent = new Intent(this.mContext, LocalNotificationsService.class);
+        }
 
         // if its not an empty action, then it has a callback and payload
         if (!action.isEmptyAction()) {
@@ -78,10 +84,17 @@ public class GenerateLocalNotificationTask extends AsyncTask<String, Void, Bitma
             actionIntent.putExtra("payload_key", action.intentPayload);
         }
 
-        PendingIntent actionpIntent = PendingIntent.getActivity(this.mContext, id,
-                actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent resultIntent;
+        if (action.launchesApp) {
+            resultIntent= PendingIntent.getActivity(this.mContext, id,
+                    actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+        else {
+            resultIntent= PendingIntent.getService(this.mContext, id,
+                    actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
-        return actionpIntent;
+        return resultIntent;
     }
 
     @Override
