@@ -18,6 +18,6 @@ public class MainActivity extends FlutterActivity {
 
   @Override
   protected void onNewIntent(Intent intent) {
-    LocalNotificationsPlugin.handleIntent(intent);
+    LocalNotificationsPlugin.handleIntent(intent); // Add me for callbacks
   }
 }

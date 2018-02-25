@@ -10,7 +10,9 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  static const channel = const MethodChannel(LocalNotifications.CHANNEL_NAME);
+  static const String notificationCallbackName = "onNotificationClick";
+  static const String replayCallbackName = "onReplyClick";
+  static const MethodChannel channel = const MethodChannel(LocalNotifications.CHANNEL_NAME);
 
   String _text;
 
@@ -20,10 +22,10 @@ class MyAppState extends State<MyApp> {
 
     channel.setMethodCallHandler((MethodCall method) {
       var payload = method.arguments;
-      if (method.method == 'onNotificationClick') {
+      if (method.method == notificationCallbackName) {
         onNotificationClick(payload);
       }
-      else if (method.method == "onReplyClick") {
+      else if (method.method == replayCallbackName) {
         onReplyClick(payload);
       }
       else {
@@ -100,7 +102,7 @@ class MyAppState extends State<MyApp> {
             'Some content',
             onNotificationClick: new NotificationAction(
                 "some action", // Note: action text gets ignored here, as android can't display this anywhere
-                "onNotificationClick",
+                notificationCallbackName,
                 "some payload"
             ),
         );
@@ -117,7 +119,7 @@ class MyAppState extends State<MyApp> {
           'Some content',
           onNotificationClick: new NotificationAction(
               "some action", // Note: action text gets ignored here, as android can't display this anywhere
-              "onNotificationClick",
+              notificationCallbackName,
               "some payload without launching the app",
             launchesApp: false
           ),
@@ -135,25 +137,25 @@ class MyAppState extends State<MyApp> {
             '... and unique callbacks and/or payloads for each',
             onNotificationClick: new NotificationAction(
                 "some action",
-                "onNotificationClick",
+                notificationCallbackName,
                 "some payload"
             ),
             actions: [
               new NotificationAction(
                   "First",
-                  "onReplyClick",
+                  replayCallbackName,
                   "firstAction",
                 launchesApp: true
               ),
               new NotificationAction(
                   "Second",
-                  "onReplyClick",
+                  replayCallbackName,
                   "secondAction",
                 launchesApp: false
               ),
               new NotificationAction(
                   "Third",
-                  "onReplyClick",
+                  replayCallbackName,
                   "thirdAction",
                 launchesApp: false
               ),
