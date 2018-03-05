@@ -26,10 +26,10 @@ public class LocalNotificationsService extends IntentService {
 
     public static boolean setSharedChannel(MethodChannel channel) {
         if (sSharedChannel != null && sSharedChannel != channel) {
-            Log.d("TAG", "sSharedChannel tried to overwrite an existing Registrar");
+            Log.d(LOGGING_TAG, "sSharedChannel tried to overwrite an existing Registrar");
             return false;
         }
-        Log.d("TAG", "sSharedChannel set");
+        Log.d(LOGGING_TAG, "sSharedChannel set");
         sSharedChannel = channel;
         return true;
     }

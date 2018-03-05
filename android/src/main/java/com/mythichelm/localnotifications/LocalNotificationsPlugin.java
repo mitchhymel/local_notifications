@@ -19,7 +19,8 @@ import io.flutter.view.FlutterNativeView;
 /**
  * LocalNotificationsPlugin
  */
-public class LocalNotificationsPlugin implements MethodCallHandler {
+public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentListener {
+  public static final String LOGGING_TAG = "LocalNotificationsPlugin";
   public static final String CHANNEL_NAME = "plugins/local_notifications";
   public static final String CREATE_NOTIFICATION = "local_notifications_createNotification";
   public static final String REMOVE_NOTIFICATION = "local_notifications_removeNotification";
@@ -33,6 +34,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), LocalNotificationsPlugin.CHANNEL_NAME);
     LocalNotificationsPlugin plugin = new LocalNotificationsPlugin(registrar);
     channel.setMethodCallHandler(plugin);
+    registrar.addNewIntentListener(plugin);
 
     LocalNotificationsService.setSharedChannel(channel);
   }
@@ -43,6 +45,11 @@ public class LocalNotificationsPlugin implements MethodCallHandler {
 
   private Context getActiveContext() {
     return (registrar.activity() != null) ? registrar.activity() : registrar.context();
+  }
+
+  @Override
+  public boolean onNewIntent(Intent intent) {
+    return handleIntent(intent);
   }
 
   @Override
@@ -109,20 +116,20 @@ public class LocalNotificationsPlugin implements MethodCallHandler {
       if (callbackName != null && callbackName != "") {
         MethodChannel channel  = LocalNotificationsService.getSharedChannel();
         if (channel != null) {
-          Log.d("TAG", "Invoking method " + callbackName + "(" + payload + ")");
+          Log.d(LOGGING_TAG, "Invoking method " + callbackName + "(" + payload + ")");
           channel.invokeMethod(callbackName, payload);
           return true;
         }
         else {
-          Log.d("TAG", "MethodChannel was null");
+          Log.d(LOGGING_TAG, "MethodChannel was null");
         }
       }
       else {
-        Log.d("TAG", "callback name was null or empty");
+        Log.d(LOGGING_TAG, "callback name was null or empty");
       }
     }
     else {
-      Log.d("TAG", "intent was null");
+      Log.d(LOGGING_TAG, "intent was null");
     }
 
     return false;
