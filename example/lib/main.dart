@@ -11,6 +11,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
 
+  String _imageUrl = 'https://flutter.io/images/catalog-widget-placeholder.png';
   String _text;
 
   onNotificationClick(String payload) {
@@ -42,7 +43,7 @@ class MyAppState extends State<MyApp> {
         onPressed: () async {
           int id = await LocalNotifications.createNotification(
             'Image', 'some notification with an image',
-            imageUrl: 'https://flutter.io/images/catalog-widget-placeholder.png',
+            imageUrl: _imageUrl,
           );
         },
         child: new Text('Create notification with image')
@@ -54,7 +55,7 @@ class MyAppState extends State<MyApp> {
         onPressed: () async {
           int id = await LocalNotifications.createNotification(
               'No swiping', 'Can\'t swipe this away',
-              imageUrl: 'https://flutter.io/images/catalog-widget-placeholder.png',
+              imageUrl: _imageUrl,
               isOngoing: true
           );
         },
@@ -114,10 +115,12 @@ class MyAppState extends State<MyApp> {
         int id = await LocalNotifications.createNotification(
             'Multiple actions',
             '... and unique callbacks and/or payloads for each',
+            imageUrl: _imageUrl,
             onNotificationClick: new NotificationAction(
                 "some action",
                 onNotificationClick,
-                "some payload"
+                "some payload",
+              launchesApp: false
             ),
             actions: [
               new NotificationAction(
