@@ -24,6 +24,7 @@ int id = await LocalNotifications.createNotification(
               );
 ```
 
+<img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/basic_notification.gif" height="800" width="440">
 
 ### Creating a notification with an image
 ```
@@ -32,6 +33,7 @@ int id = await LocalNotifications.createNotification(
                   imageUrl: 'https://flutter.io/images/catalog-widget-placeholder.png',
               );
 ```
+<img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/notification_with_image.gif" height="800" width="440">
 
 ### Creating an undismissable notification
 ```
@@ -41,11 +43,13 @@ int id = await LocalNotifications.createNotification(
                   isOngoing: true
               );
 ```
+<img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/undismissable.gif" height="800" width="440">
 
 ### Removing a notification
 ```
-await LocalNotifications.removeNotification(1);
+await LocalNotifications.removeNotification(id);
 ```
+<img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/remove_notification.gif" height="800" width="440">
 
 ### Creating a notification that will run code in background on click
 ```
@@ -66,7 +70,13 @@ int id = await LocalNotifications.createNotification(
             ),
         );
 ```
+<img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/notification_with_payload_in_background.gif" height="800" width="440">
 
+### Creating a notification with multiple actions, some run in background, some bring app to foreground
+For code, see the [example](https://github.com/mitchhymel/local_notifications/blob/master/example/lib/main.dart#L112).
+
+
+<img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/notification_multiple_actions.gif" height="800" width="440">
 
 ## Getting Started
 
