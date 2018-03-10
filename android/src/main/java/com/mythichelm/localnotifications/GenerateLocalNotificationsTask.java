@@ -80,8 +80,8 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
 
         // if its not an empty action, then it has a callback and payload
         if (!action.isEmptyAction()) {
-            actionIntent.putExtra("callback_key", action.callbackFunctionName);
-            actionIntent.putExtra("payload_key", action.intentPayload);
+            actionIntent.putExtra(LocalNotificationsPlugin.CALLBACK_KEY, action.callbackFunctionName);
+            actionIntent.putExtra(LocalNotificationsPlugin.PAYLOAD_KEY, action.intentPayload);
         }
 
         PendingIntent resultIntent;

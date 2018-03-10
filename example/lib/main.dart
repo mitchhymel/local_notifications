@@ -31,7 +31,8 @@ class MyAppState extends State<MyApp> {
     return new RaisedButton(
       onPressed: () async {
         int id = await LocalNotifications.createNotification(
-          'Basic', 'some basic notification',
+          title: 'Basic',
+          content: 'some basic notification',
         );
       },
       child: new Text('Create basic notification'),
@@ -42,7 +43,8 @@ class MyAppState extends State<MyApp> {
     return new RaisedButton(
         onPressed: () async {
           int id = await LocalNotifications.createNotification(
-            'Image', 'some notification with an image',
+            title: 'Image',
+            content: 'some notification with an image',
             imageUrl: _imageUrl,
           );
         },
@@ -54,7 +56,8 @@ class MyAppState extends State<MyApp> {
     return new RaisedButton(
         onPressed: () async {
           int id = await LocalNotifications.createNotification(
-              'No swiping', 'Can\'t swipe this away',
+              title: 'No swiping',
+              content: 'Can\'t swipe this away',
               imageUrl: _imageUrl,
               isOngoing: true
           );
@@ -78,12 +81,12 @@ class MyAppState extends State<MyApp> {
     return new RaisedButton(
       onPressed: () async {
         int id = await LocalNotifications.createNotification(
-            'Callback and payload notif',
-            'Some content',
+            title: 'Callback and payload notif',
+            content: 'Some content',
             onNotificationClick: new NotificationAction(
-                "some action", // Note: action text gets ignored here, as android can't display this anywhere
-                onNotificationClick,
-                "some payload"
+                actionText: "some action", // Note: action text gets ignored here, as android can't display this anywhere
+                callback: onNotificationClick,
+                payload: "some payload"
             ),
         );
       },
@@ -95,12 +98,12 @@ class MyAppState extends State<MyApp> {
     return new RaisedButton(
       onPressed: () async {
         int id = await LocalNotifications.createNotification(
-          'Callback and payload notif',
-          'Some content',
+          title: 'Callback and payload notif',
+          content: 'Some content',
           onNotificationClick: new NotificationAction(
-              "some action", // Note: action text gets ignored here, as android can't display this anywhere
-              onNotificationClick,
-              "some payload without launching the app",
+              actionText:  "some action", // Note: action text gets ignored here, as android can't display this anywhere
+              callback: onNotificationClick,
+              payload: "some payload without launching the app",
             launchesApp: false
           ),
         );
@@ -113,38 +116,60 @@ class MyAppState extends State<MyApp> {
     return new RaisedButton(
       onPressed: () async {
         int id = await LocalNotifications.createNotification(
-            'Multiple actions',
-            '... and unique callbacks and/or payloads for each',
+            title: 'Multiple actions',
+            content: '... and unique callbacks and/or payloads for each',
             imageUrl: _imageUrl,
             onNotificationClick: new NotificationAction(
-                "some action",
-                onNotificationClick,
-                "some payload",
-              launchesApp: false
+                actionText: "some action",
+                callback: onNotificationClick,
+                payload: "some payload",
+                launchesApp: false
             ),
             actions: [
               new NotificationAction(
-                  "First",
-                  onReplyClick,
-                  "firstAction",
-                launchesApp: true
+                  actionText: "First",
+                  callback: onReplyClick,
+                  payload: "firstAction",
+                  launchesApp: true
               ),
               new NotificationAction(
-                  "Second",
-                  onReplyClick,
-                  "secondAction",
-                launchesApp: false
+                  actionText: "Second",
+                  callback: onReplyClick,
+                  payload: "secondAction",
+                  launchesApp: false
               ),
               new NotificationAction(
-                  "Third",
-                  onReplyClick,
-                  "thirdAction",
-                launchesApp: false
+                  actionText: "Third",
+                  callback: onReplyClick,
+                  payload: "thirdAction",
+                  launchesApp: false
               ),
             ]
         );
       },
       child: new Text('Create notification with multiple actions'),
+    );
+  }
+
+  Widget _getNotificationWithAnonymousFunctionAsCallback() {
+    return new RaisedButton(
+        child: new Text('Create notification with anonymous function as callback using a callbackName'),
+        onPressed: () async {
+          int id = await LocalNotifications.createNotification(
+            title: 'Anonymous callback',
+            content: '... using anonymous callback with provided callbackName',
+            onNotificationClick: new NotificationAction(
+              actionText: '', //ignored
+              callback: (String payload) {
+                setState((){
+                  _text = payload;
+                });
+              },
+              payload: 'payload with anonymous function',
+              callbackName: 'anonymousName'
+            )
+          );
+        }
     );
   }
 
@@ -165,6 +190,7 @@ class MyAppState extends State<MyApp> {
               _getNotificationWithCallbackAndPayload(),
               _getNotificationWithCallbackAndPayloadInBackground(),
               _getNotificationWithMultipleActionsAndPayloads(),
+              _getNotificationWithAnonymousFunctionAsCallback(),
               new Text(_text ?? "Click a notification with a payload to see the results here")
             ],
           ),

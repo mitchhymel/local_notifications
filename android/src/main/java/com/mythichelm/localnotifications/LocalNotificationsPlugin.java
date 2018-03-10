@@ -24,6 +24,8 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
   public static final String CHANNEL_NAME = "plugins/local_notifications";
   public static final String CREATE_NOTIFICATION = "local_notifications_createNotification";
   public static final String REMOVE_NOTIFICATION = "local_notifications_removeNotification";
+  public static final String CALLBACK_KEY = "callback_key";
+  public static final String PAYLOAD_KEY = "payload_key";
 
   private final Registrar registrar;
 
@@ -111,8 +113,8 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
 
   public static boolean handleIntent(Intent intent) {
     if (intent != null) {
-      String callbackName = intent.getStringExtra("callback_key");
-      String payload = intent.getStringExtra("payload_key");
+      String callbackName = intent.getStringExtra(CALLBACK_KEY);
+      String payload = intent.getStringExtra(PAYLOAD_KEY);
       if (callbackName != null && callbackName != "") {
         MethodChannel channel  = LocalNotificationsService.getSharedChannel();
         if (channel != null) {

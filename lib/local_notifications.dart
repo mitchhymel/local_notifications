@@ -1,15 +1,27 @@
 import 'dart:async';
+import 'package:meta/meta.dart';
 
 import 'package:flutter/services.dart';
 
 class NotificationAction {
   final Function(String) callback;
   final String actionText;
-  final String intentPayload;
+  final String payload;
   final bool launchesApp;
-  const NotificationAction(this.actionText, this.callback, this.intentPayload, {this.launchesApp = true});
+  final String callbackName; // only use when callback is an anonymous function
+  const NotificationAction({
+      @required this.actionText,
+      @required this.callback,
+      @required this.payload,
+      this.launchesApp = true,
+      this.callbackName
+  });
 
-  static const NotificationAction DEFAULT = const NotificationAction('', null, '');
+  static const NotificationAction DEFAULT = const NotificationAction(
+      actionText: '',
+      callback: null,
+      payload: ''
+  );
 }
 
 class LocalNotifications {
@@ -26,23 +38,27 @@ class LocalNotifications {
   static const int ANDROID_IMPORTANCE_MAX = 5;
   static const int ANDROID_IMPORTANCE_MIN = 1;
 
-  static Future<Null> createNotification(String title, String content,
-      {String imageUrl = '', String ticker = '',
-        int importance = ANDROID_IMPORTANCE_DEFAULT,
-        bool isOngoing = false, int id = 0,
-        NotificationAction onNotificationClick = NotificationAction.DEFAULT,
-        List<NotificationAction> actions = const []
-      }) {
-    List<String> callbacks = actions.map((action) => _nameOfFunction(action.callback)).toList();
+  static Future<int> createNotification({
+    @required String title,
+    @required String content,
+    String imageUrl = '',
+    String ticker = '',
+    int importance = ANDROID_IMPORTANCE_DEFAULT,
+    bool isOngoing = false,
+    int id = 0,
+    NotificationAction onNotificationClick = NotificationAction.DEFAULT,
+    List<NotificationAction> actions = const []
+  }) {
+    List<String> callbacks = actions.map((action) => _getCallbackNameFromAction(action)).toList();
     List<String> actionTexts = actions.map((action) => action.actionText).toList();
-    List<String> intentPayloads = actions.map((action) => action.intentPayload).toList();
+    List<String> intentPayloads = actions.map((action) => action.payload).toList();
     List<bool> launchesApps = actions.map((action) => action.launchesApp).toList();
 
     _channel.setMethodCallHandler((MethodCall method) {
       var payload = method.arguments;
       List<NotificationAction> actionsToCheck = []..add(onNotificationClick)..addAll(actions);
       for (NotificationAction action in actionsToCheck) {
-        String functionName = _nameOfFunction(action.callback);
+        String functionName = _getCallbackNameFromAction(action);
         if (method.method == functionName) {
           print('Dart: calling $functionName with payload: $payload');
           action.callback(payload);
@@ -61,9 +77,9 @@ class LocalNotifications {
       importance,
       isOngoing,
       id,
-      _nameOfFunction(onNotificationClick.callback),
+      _getCallbackNameFromAction(onNotificationClick),
       onNotificationClick.actionText,
-      onNotificationClick.intentPayload,
+      onNotificationClick.payload,
       onNotificationClick.launchesApp,
       callbacks,
       actionTexts,
@@ -75,6 +91,10 @@ class LocalNotifications {
 
   static Future<Null> removeNotification(int id) {
     return _channel.invokeMethod(_removeNotification, [id]);
+  }
+
+  static String _getCallbackNameFromAction(NotificationAction action) {
+    return action.callbackName ?? _nameOfFunction(action.callback);
   }
 
   // Extracts the name of a top-level function from the .toString() of its
