@@ -1,13 +1,16 @@
 name: local_notifications
 description: A flutter plugin for creating local notifications.
 version: 0.0.1
-author: Mitch Hymel
+author: Mitch Hymel <mitchell.hymel@gmail.com>
 homepage: https://github.com/mitchhymel/local_notifications
 
 dependencies:
   flutter:
     sdk: flutter
+  meta: ^1.1.1
 
+environment:
+    sdk: ">=1.8.0 <2.0.0"
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
