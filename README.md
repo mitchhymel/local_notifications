@@ -1,18 +1,10 @@
 # local_notifications
 
-A [Flutter](https://flutter.io/) plugin for showing and removing notifications. Currently only supports Android.
+A [Flutter](https://flutter.io/) plugin for showing and removing notifications.
 
 ## Usage
 
 See the full example [here](https://github.com/mitchhymel/local_notifications/blob/master/example/lib/main.dart)
-
-## Android set up steps
-To have the notification run code in the background (on click of either the notification itself or its actions), you must add the LocalNotificationsService to your app's manifest. Add the following to the <Application> tag of your manifest (android\app\src\main\AndroidManifest.xml)
-```
-<service
-  android:name="com.mythichelm.localnotifications.LocalNotificationsService"
-  android:exported="false" />
-```
 
 ## Features supported by platform
 | Feature        | Android           | ios  |
@@ -22,6 +14,14 @@ To have the notification run code in the background (on click of either the noti
 | Dismiss local notification which is already delivered | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
 | Create local notification with an image  | <ul><li> - [x] </li></ul>| <ul><li> - [ ] </li></ul> |
 | Create local notification which is undismissable | <ul><li> - [x] </li></ul>| <ul><li> - [ ] </li></ul> |
+
+## Android set up steps
+To have the notification run code in the background (on click of either the notification itself or its actions), you must add the LocalNotificationsService to your app's manifest. Add the following to the <Application> tag of your manifest (android\app\src\main\AndroidManifest.xml)
+```
+<service
+  android:name="com.mythichelm.localnotifications.LocalNotificationsService"
+  android:exported="false" />
+```
 
 ## Examples
 
