@@ -1,6 +1,6 @@
 # local_notifications
 
-A [Flutter](https://flutter.io/) plugin for showing and removing notifications.
+A [Flutter](https://flutter.io/) plugin for showing and removing notifications. Available on [Pub](https://pub.dartlang.org/packages/local_notifications)
 
 ## Usage
 
