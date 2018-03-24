@@ -46,6 +46,7 @@ class LocalNotifications {
     int importance = ANDROID_IMPORTANCE_DEFAULT,
     bool isOngoing = false,
     int id = 0,
+    bool presentWhileAppOpen = true,
     NotificationAction onNotificationClick = NotificationAction.DEFAULT,
     List<NotificationAction> actions = const []
   }) {
@@ -84,7 +85,8 @@ class LocalNotifications {
       callbacks,
       actionTexts,
       intentPayloads,
-      launchesApps
+      launchesApps,
+      presentWhileAppOpen
     ];
     return _channel.invokeMethod(_createNotification, args);
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:local_notifications/local_notifications.dart';
 
 void main() => runApp(new MyApp());
