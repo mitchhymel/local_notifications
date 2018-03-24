@@ -14,6 +14,14 @@ To have the notification run code in the background (on click of either the noti
   android:exported="false" />
 ```
 
+## Features supported by platform
+| Feature        | Android           | ios  |
+| ------------- |:-----:|:-----:|
+| Create local notification with custom title and content    | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
+| Create local notification with custom actions with custom callbacks  | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
+| Dismiss local notification which is already delivered | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
+| Create local notification with an image  | <ul><li> - [x] </li></ul>| <ul><li> - [ ] </li></ul> |
+| Create local notification which is undismissable | <ul><li> - [x] </li></ul>| <ul><li> - [ ] </li></ul> |
 
 ## Examples
 
