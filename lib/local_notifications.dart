@@ -3,6 +3,18 @@ import 'package:meta/meta.dart';
 
 import 'package:flutter/services.dart';
 
+/// Class that describes a notification action.
+///
+/// When the user clicks a notification action, the function [callback] will
+/// be called with [payload] as the argument.
+///
+/// The value of [launchesApp] determines if the app is brought into the
+/// forefront when the action is clicked. The default value is true
+///
+/// The value of [callbackName] must be provided if [callback] is an anonymous
+/// function. Else this value will be populated by this library from the
+/// name of [callback].
+///
 class NotificationAction {
   final Function(String) callback;
   final String actionText;
@@ -38,6 +50,33 @@ class LocalNotifications {
   static const int ANDROID_IMPORTANCE_MAX = 5;
   static const int ANDROID_IMPORTANCE_MIN = 1;
 
+  /// Creates a local notification.
+  ///
+  /// Creates a local notification with a title using [title] and content
+  /// using [content].
+  ///
+  /// Only on Android, if [imageUrl] is provided, then the
+  /// notification will contain this image.
+  ///
+  /// Only on Android, the value provided by [importance] will be used
+  /// by the OS to determine how to rank your notification against other
+  /// apps' notifications
+  ///
+  /// Only on Android, the value of [isOngoing] determines if the
+  /// notification can be dismissed or not.
+  ///
+  /// The notification will be created with the value provided by [id]. If no
+  /// value is provided, the notification id will default to 0
+  ///
+  /// Only on iOS, the value of [presentWhileAppOpen] determines if the
+  /// notification will show to the user if the app is in the forefront
+  ///
+  /// The value of [onNotificationClick] determines what happens when the
+  /// notification is clicked. If no value is provided, the default action is
+  /// to simply launch the app.
+  ///
+  /// The value of [actions] determines the actions of the notification.
+  /// Both android and ios support a limited number of actions.
   static Future<int> createNotification({
     @required String title,
     @required String content,
@@ -91,6 +130,7 @@ class LocalNotifications {
     return _channel.invokeMethod(_createNotification, args);
   }
 
+  /// Removes a local notification with the provided [id].
   static Future<Null> removeNotification(int id) {
     return _channel.invokeMethod(_removeNotification, [id]);
   }
