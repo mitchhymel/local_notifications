@@ -28,8 +28,9 @@ To have the notification run code in the background (on click of either the noti
 ### Creating a basic notification with title and text content
 ```
 int id = await LocalNotifications.createNotification(
-                  'Basic', 'some basic notification',
-              );
+          title: 'Basic',
+          content: 'some basic notification',
+        );
 ```
 
 <img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/basic_notification.gif" height="800" width="440">
