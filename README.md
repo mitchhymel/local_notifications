@@ -37,19 +37,21 @@ int id = await LocalNotifications.createNotification(
 ### Creating a notification with an image
 ```
 int id = await LocalNotifications.createNotification(
-                  'Image', 'some notification with an image',
-                  imageUrl: 'https://flutter.io/images/catalog-widget-placeholder.png',
-              );
+            title: 'Image',
+            content: 'some notification with an image',
+            imageUrl: _imageUrl,
+          );
 ```
 <img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/notification_with_image.gif" height="800" width="440">
 
 ### Creating an undismissable notification
 ```
 int id = await LocalNotifications.createNotification(
-                  'Title', 'content',
-                  imageUrl: 'https://flutter.io/images/catalog-widget-placeholder.png',
-                  isOngoing: true
-              );
+              title: 'No swiping',
+              content: 'Can\'t swipe this away',
+              imageUrl: _imageUrl,
+              isOngoing: true
+          );
 ```
 <img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/undismissable.gif" height="800" width="440">
 
@@ -68,13 +70,12 @@ onNotificationClick(String payload) {
 
 
 int id = await LocalNotifications.createNotification(
-            'Some title',
-            'Some content',
+            title: 'Callback and payload notif',
+            content: 'Some content',
             onNotificationClick: new NotificationAction(
-                "this_is_ignored", // title of action is ignored for notification click
-                onNotificationClick, // your callback
-                "some payload",
-              launchesApp: false
+                actionText: "some action", // Note: action text gets ignored here, as android can't display this anywhere
+                callback: onNotificationClick,
+                payload: "some payload"
             ),
         );
 ```
