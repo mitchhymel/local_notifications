@@ -1,13 +1,13 @@
 # local_notifications
 
-A [Flutter](https://flutter.io/) plugin for showing and removing notifications. Available on [Pub](https://pub.dartlang.org/packages/local_notifications)
+A [Flutter](https://flutter.io/) plugin for local notifications for [Android](https://developer.android.com/guide/topics/ui/notifiers/notifications.html) and [iOS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/). Available on [Pub](https://pub.dartlang.org/packages/local_notifications).
 
 ## Usage
 
 See the full example [here](https://github.com/mitchhymel/local_notifications/blob/master/example/lib/main.dart)
 
 ## Features supported by platform
-| Feature        | Android           | ios  |
+| Feature        | Android           | iOS 10+  |
 | ------------- |:-----:|:-----:|
 | Create local notification with custom title and content    | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
 | Create local notification with custom actions with custom callbacks  | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
