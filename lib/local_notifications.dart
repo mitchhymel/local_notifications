@@ -38,7 +38,7 @@ class NotificationAction {
 
 class LocalNotifications {
   static const MethodChannel _channel =
-      const MethodChannel(CHANNEL_NAME);
+    const MethodChannel(CHANNEL_NAME);
 
   static const String CHANNEL_NAME = 'plugins/local_notifications';
   static const String _createNotification = 'local_notifications_createNotification';
@@ -49,6 +49,14 @@ class LocalNotifications {
   static const int ANDROID_IMPORTANCE_LOW = 2;
   static const int ANDROID_IMPORTANCE_MAX = 5;
   static const int ANDROID_IMPORTANCE_MIN = 1;
+
+  static bool loggingEnabled = false;
+
+  static void _log(String text) {
+    if (loggingEnabled) {
+      print('LocalNotificationsPlugin: $text');
+    }
+  }
 
   /// Creates a local notification.
   ///
@@ -77,7 +85,7 @@ class LocalNotifications {
   ///
   /// The value of [actions] determines the actions of the notification.
   /// Both android and ios support a limited number of actions.
-  static Future<int> createNotification({
+  static Future<int> createNotification ({
     @required String title,
     @required String content,
     String imageUrl = '',
@@ -88,7 +96,7 @@ class LocalNotifications {
     bool presentWhileAppOpen = true,
     NotificationAction onNotificationClick = NotificationAction.DEFAULT,
     List<NotificationAction> actions = const []
-  }) {
+  }) async {
     List<String> callbacks = actions.map((action) => _getCallbackNameFromAction(action)).toList();
     List<String> actionTexts = actions.map((action) => action.actionText).toList();
     List<String> intentPayloads = actions.map((action) => action.payload).toList();
@@ -100,13 +108,13 @@ class LocalNotifications {
       for (NotificationAction action in actionsToCheck) {
         String functionName = _getCallbackNameFromAction(action);
         if (method.method == functionName) {
-          print('Dart: calling $functionName with payload: $payload');
+          _log('In dart code after action is clicked. Calling $functionName("$payload")');
           action.callback(payload);
           return;
         }
       }
 
-      print('Dart: no method found: ${method.method}, $payload');
+      _log('In dart code after action is clicked. No method found matching name "${method.method}"');
     });
 
     List args = [
@@ -127,12 +135,12 @@ class LocalNotifications {
       launchesApps,
       presentWhileAppOpen
     ];
-    return _channel.invokeMethod(_createNotification, args);
+    return await _channel.invokeMethod(_createNotification, args);
   }
 
   /// Removes a local notification with the provided [id].
-  static Future<Null> removeNotification(int id) {
-    return _channel.invokeMethod(_removeNotification, [id]);
+  static Future<Null> removeNotification(int id) async {
+    return await _channel.invokeMethod(_removeNotification, [id]);
   }
 
   static String _getCallbackNameFromAction(NotificationAction action) {

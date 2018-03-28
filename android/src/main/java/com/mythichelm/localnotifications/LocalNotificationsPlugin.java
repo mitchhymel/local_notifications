@@ -118,7 +118,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
       if (callbackName != null && callbackName != "") {
         MethodChannel channel  = LocalNotificationsService.getSharedChannel();
         if (channel != null) {
-          Log.d(LOGGING_TAG, "Invoking method " + callbackName + "(" + payload + ")");
+          Log.d(LOGGING_TAG, "Invoking method " + callbackName + "('" + payload + "')");
           channel.invokeMethod(callbackName, payload);
           return true;
         }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:local_notifications/local_notifications.dart';
+import 'dart:async';
 
 void main() => runApp(new MyApp());
 
@@ -26,12 +27,22 @@ class MyAppState extends State<MyApp> {
     LocalNotifications.removeNotification(0);
   }
 
+  var staticId = 1;
+  void removeNotify(String payload) {
+    LocalNotifications.removeNotification(staticId);
+  }
+
   Widget _getBasicNotification() {
     return new RaisedButton(
       onPressed: () async {
-        int id = await LocalNotifications.createNotification(
+        staticId = await LocalNotifications.createNotification(
           title: 'Basic',
           content: 'some basic notification',
+          isOngoing: false,
+          onNotificationClick: new NotificationAction(
+              actionText: "some action",
+              callback: removeNotify,
+              payload: "")
         );
       },
       child: new Text('Create basic notification'),
