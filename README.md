@@ -1,13 +1,13 @@
 # local_notifications
 
-A [Flutter](https://flutter.io/) plugin for showing and removing notifications. Available on [Pub](https://pub.dartlang.org/packages/local_notifications)
+A [Flutter](https://flutter.io/) plugin for local notifications for [Android](https://developer.android.com/guide/topics/ui/notifiers/notifications.html) and [iOS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/). Available on [Pub](https://pub.dartlang.org/packages/local_notifications).
 
 ## Usage
 
 See the full example [here](https://github.com/mitchhymel/local_notifications/blob/master/example/lib/main.dart)
 
 ## Features supported by platform
-| Feature        | Android           | ios  |
+| Feature        | Android           | iOS 10+  |
 | ------------- |:-----:|:-----:|
 | Create local notification with custom title and content    | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
 | Create local notification with custom actions with custom callbacks  | <ul><li> - [x] </li></ul>| <ul><li> - [x] </li></ul> |
@@ -28,8 +28,9 @@ To have the notification run code in the background (on click of either the noti
 ### Creating a basic notification with title and text content
 ```
 int id = await LocalNotifications.createNotification(
-                  'Basic', 'some basic notification',
-              );
+          title: 'Basic',
+          content: 'some basic notification',
+        );
 ```
 
 <img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/basic_notification.gif" height="800" width="440">
@@ -37,19 +38,21 @@ int id = await LocalNotifications.createNotification(
 ### Creating a notification with an image
 ```
 int id = await LocalNotifications.createNotification(
-                  'Image', 'some notification with an image',
-                  imageUrl: 'https://flutter.io/images/catalog-widget-placeholder.png',
-              );
+            title: 'Image',
+            content: 'some notification with an image',
+            imageUrl: _imageUrl,
+          );
 ```
 <img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/notification_with_image.gif" height="800" width="440">
 
 ### Creating an undismissable notification
 ```
 int id = await LocalNotifications.createNotification(
-                  'Title', 'content',
-                  imageUrl: 'https://flutter.io/images/catalog-widget-placeholder.png',
-                  isOngoing: true
-              );
+              title: 'No swiping',
+              content: 'Can\'t swipe this away',
+              imageUrl: _imageUrl,
+              isOngoing: true
+          );
 ```
 <img src="https://github.com/mitchhymel/local_notifications/blob/master/gifs/undismissable.gif" height="800" width="440">
 
@@ -68,13 +71,12 @@ onNotificationClick(String payload) {
 
 
 int id = await LocalNotifications.createNotification(
-            'Some title',
-            'Some content',
+            title: 'Callback and payload notif',
+            content: 'Some content',
             onNotificationClick: new NotificationAction(
-                "this_is_ignored", // title of action is ignored for notification click
-                onNotificationClick, // your callback
-                "some payload",
-              launchesApp: false
+                actionText: "some action", // Note: action text gets ignored here, as android can't display this anywhere
+                callback: onNotificationClick,
+                payload: "some payload"
             ),
         );
 ```
