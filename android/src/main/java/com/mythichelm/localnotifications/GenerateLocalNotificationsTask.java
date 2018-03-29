@@ -1,5 +1,9 @@
 package com.mythichelm.localnotifications;
 
+import android.app.NotificationChannel;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
 import android.app.Notification;
 import android.app.Notification.*;
@@ -106,6 +110,8 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
             Drawable drawable = this.mContext
                     .getPackageManager()
                     .getApplicationIcon(this.mContext.getPackageName());
+
+            android.graphics.drawable.
             Icon icon = Icon.createWithBitmap(((BitmapDrawable) drawable).getBitmap());
 
             int nextNotificationId = 0;
@@ -134,10 +140,13 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
                 builder.addAction(action);
             }
 
+            builder.setVibrate(new long[] {1000, 1000, 1000});
+            builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
             Notification notification = builder.build();
 
-            NotificationManager notificationManager =
-                    (NotificationManager) this.mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) this.mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(this.id, notification);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

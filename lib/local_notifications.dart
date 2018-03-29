@@ -135,7 +135,7 @@ class LocalNotifications {
       launchesApps,
       presentWhileAppOpen
     ];
-    return await _channel.invokeMethod(_createNotification, args);
+    await _channel.invokeMethod(_createNotification, args);
   }
 
   /// Removes a local notification with the provided [id].
