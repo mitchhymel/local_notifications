@@ -19,7 +19,7 @@ See the full example [here](https://github.com/mitchhymel/local_notifications/bl
 To have the notification run code in the background (on click of either the notification itself or its actions), you must add the LocalNotificationsService to your app's manifest. Add the following to the <Application> tag of your manifest (android\app\src\main\AndroidManifest.xml)
 ```
 <service
-  android:name="com.mythichelm.localnotifications.LocalNotificationsService"
+  android:name="com.mythichelm.localnotifications.services.LocalNotificationsService"
   android:exported="false" />
 ```
 
