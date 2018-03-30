@@ -1,4 +1,4 @@
-package com.mythichelm.localnotifications;
+package com.mythichelm.localnotifications.factories;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -9,6 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.provider.Settings;
+
+import com.mythichelm.localnotifications.entities.NotificationAction;
+import com.mythichelm.localnotifications.entities.NotificationSettings;
 
 public class NotificationFactory implements INotifcationFactory {
 

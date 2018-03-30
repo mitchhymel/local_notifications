@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <service
-                android:name="com.mythichelm.localnotifications.LocalNotificationsService"
+                android:name="com.mythichelm.localnotifications.services.LocalNotificationsService"
                 android:exported="false" />
     </application>
 </manifest>

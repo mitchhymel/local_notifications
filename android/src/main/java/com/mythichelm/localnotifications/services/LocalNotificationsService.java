@@ -1,9 +1,11 @@
-package com.mythichelm.localnotifications;
+package com.mythichelm.localnotifications.services;
 
 import android.os.Bundle;
 import android.content.Intent;
 import android.app.IntentService;
 import android.util.Log;
+
+import com.mythichelm.localnotifications.LocalNotificationsPlugin;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -24,6 +26,7 @@ public class LocalNotificationsService extends IntentService {
         return sSharedChannel;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean setSharedChannel(MethodChannel channel) {
         if (sSharedChannel != null && sSharedChannel != channel) {
             Log.d(LocalNotificationsPlugin.LOGGING_TAG, "sSharedChannel tried to overwrite an existing Registrar");

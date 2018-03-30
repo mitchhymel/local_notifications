@@ -1,4 +1,4 @@
-package com.mythichelm.localnotifications;
+package com.mythichelm.localnotifications.entities;
 
 import android.app.PendingIntent;
 import android.graphics.Bitmap;
@@ -16,4 +16,7 @@ public class NotificationSettings {
     public String Ticker;
     public NotificationAction[] ExtraActions;
     public int Priority = 0;
+    public String ImageUrl;
+    public int Id;
+    public NotificationAction OnNotificationClick;
 }

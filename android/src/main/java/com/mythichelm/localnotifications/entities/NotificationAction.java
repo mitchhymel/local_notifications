@@ -1,19 +1,22 @@
-package com.mythichelm.localnotifications;
+package com.mythichelm.localnotifications.entities;
 
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.mythichelm.localnotifications.LocalNotificationsPlugin;
+import com.mythichelm.localnotifications.services.LocalNotificationsService;
+
 import java.util.Objects;
 
-class NotificationAction {
+public class NotificationAction {
     private String callbackFunctionName;
-    String actionText;
+    public String actionText;
     private String intentPayload;
     private boolean launchesApp;
     private static int currentId = 0;
 
-    NotificationAction(String callbackFunctionName, String actionText, String intentPayload, boolean launchesApp) {
+    public NotificationAction(String callbackFunctionName, String actionText, String intentPayload, boolean launchesApp) {
         this.callbackFunctionName = callbackFunctionName;
         this.actionText = actionText;
         this.intentPayload = intentPayload;
@@ -26,7 +29,7 @@ class NotificationAction {
                 && Objects.equals(this.intentPayload, "");
     }
 
-    PendingIntent getIntent(Context context) {
+    public PendingIntent getIntent(Context context) {
         return launchesApp
                 ? getIntentForLaunchesApp(context)
                 : getIntentNotLaunchesApp(context);

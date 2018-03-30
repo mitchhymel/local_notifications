@@ -5,8 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.app.NotificationManager;
 
+import com.mythichelm.localnotifications.entities.NotificationSettings;
+import com.mythichelm.localnotifications.factories.INotificationSettingsFactory;
+import com.mythichelm.localnotifications.factories.NotificationFactory;
+import com.mythichelm.localnotifications.factories.NotificationSettingsFactory;
+import com.mythichelm.localnotifications.services.LocalNotificationsService;
+
+
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Objects;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -19,120 +26,111 @@ import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
  * LocalNotificationsPlugin
  */
 public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentListener {
-  public static final String LOGGING_TAG = "LocalNotificationsP";
-  public static final String CHANNEL_NAME = "plugins/local_notifications";
-  public static final String CREATE_NOTIFICATION = "local_notifications_createNotification";
-  public static final String REMOVE_NOTIFICATION = "local_notifications_removeNotification";
-  public static final String CALLBACK_KEY = "callback_key";
-  public static final String PAYLOAD_KEY = "payload_key";
+    public static final String LOGGING_TAG = "LocalNotifications";
+    public static final String CHANNEL_NAME = "plugins/local_notifications";
+    public static final String CREATE_NOTIFICATION = "local_notifications_createNotification";
+    public static final String REMOVE_NOTIFICATION = "local_notifications_removeNotification";
+    public static final String CALLBACK_KEY = "callback_key";
+    public static final String PAYLOAD_KEY = "payload_key";
 
-  private final Registrar registrar;
+    private final Registrar registrar;
+    private final INotificationSettingsFactory notificationSettingsFactory = new NotificationSettingsFactory();
 
-  /**
-   * Plugin registration.
-   */
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), LocalNotificationsPlugin.CHANNEL_NAME);
-    LocalNotificationsPlugin plugin = new LocalNotificationsPlugin(registrar);
-    channel.setMethodCallHandler(plugin);
-    registrar.addNewIntentListener(plugin);
+    /**
+     * Plugin registration.
+     */
+    public static void registerWith(Registrar registrar) {
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), LocalNotificationsPlugin.CHANNEL_NAME);
+        LocalNotificationsPlugin plugin = new LocalNotificationsPlugin(registrar);
+        channel.setMethodCallHandler(plugin);
+        registrar.addNewIntentListener(plugin);
 
-    LocalNotificationsService.setSharedChannel(channel);
-  }
-
-  private LocalNotificationsPlugin(Registrar registrar) {
-    this.registrar = registrar;
-  }
-
-  private Context getActiveContext() {
-    return (registrar.activity() != null) ? registrar.activity() : registrar.context();
-  }
-
-  @Override
-  public boolean onNewIntent(Intent intent) {
-    return handleIntent(intent);
-  }
-
-  @Override
-  public void onMethodCall(MethodCall call, Result result) {
-    List<Object> arguments = call.arguments();
-    if (call.method.equals(CREATE_NOTIFICATION)) {
-      result.success(createNotification(arguments));
-    } else if (call.method.equals(REMOVE_NOTIFICATION)){
-      int id = (int)arguments.get(0);
-      removeNotification(id);
-      result.success(null);
-    } else {
-      result.notImplemented();
-    }
-  }
-
-  private int createNotification(List<Object> arguments) {
-    String title = (String)arguments.get(0);
-    String content = (String)arguments.get(1);
-    String imageUrl = (String)arguments.get(2);
-    String ticker = (String)arguments.get(3);
-    int importance = (int)arguments.get(4);
-    boolean isOngoing = (boolean)arguments.get(5);
-    int id = (int)arguments.get(6);
-
-    // get onNotificationclick
-    String callbackName = (String)arguments.get(7);
-    String actionText = (String)arguments.get(8);
-    String intentPayload = (String)arguments.get(9);
-    boolean launchesApp = (boolean)arguments.get(10);
-    NotificationAction onNotificationClick = new NotificationAction(callbackName, actionText, intentPayload, launchesApp);
-
-    // get extra actions
-    List<String> actionsCallbacks = (List<String>)arguments.get(11);
-    List<String> actionsTexts = (List<String>)arguments.get(12);
-    List<String> actionsIntentPayloads = (List<String>)arguments.get(13);
-    List<Boolean> actionsLaunchesApp = (List<Boolean>)arguments.get(14);
-    List<NotificationAction> extraActions = new ArrayList<NotificationAction>();
-    for (int i = 0; i < actionsCallbacks.size(); i++) {
-      String callback = actionsCallbacks.get(i);
-      String text = actionsTexts.get(i);
-      String payload = actionsIntentPayloads.get(i);
-      boolean launch = actionsLaunchesApp.get(i);
-      extraActions.add(new NotificationAction(callback, text, payload, launch));
+        LocalNotificationsService.setSharedChannel(channel);
     }
 
-    new GenerateLocalNotificationsTask(getActiveContext(),
-            id, title, content, imageUrl, ticker, importance, isOngoing,
-            onNotificationClick, extraActions, new NotificationFactory())
-            .execute();
-    return id;
-  }
+    private LocalNotificationsPlugin(Registrar registrar) {
+        this.registrar = registrar;
+    }
 
-  private void removeNotification(int id) {
-    NotificationManager notificationManager =
-            (NotificationManager) getActiveContext().getSystemService(Context.NOTIFICATION_SERVICE);
-    notificationManager.cancel(id);
-  }
+    private Context getActiveContext() {
+        return (registrar.activity() != null) ? registrar.activity() : registrar.context();
+    }
 
-  public static boolean handleIntent(Intent intent) {
-    if (intent != null) {
-      String callbackName = intent.getStringExtra(CALLBACK_KEY);
-      String payload = intent.getStringExtra(PAYLOAD_KEY);
-      if (callbackName != null && callbackName != "") {
-        MethodChannel channel  = LocalNotificationsService.getSharedChannel();
+    @Override
+    public boolean onNewIntent(Intent intent) {
+        return handleIntent(intent);
+    }
+
+    @Override
+    public void onMethodCall(MethodCall call, Result result) {
+        List<Object> arguments = call.arguments();
+        switch (call.method) {
+            case CREATE_NOTIFICATION:
+                result.success(createNotification(arguments));
+                break;
+            case REMOVE_NOTIFICATION:
+                int id = (int) arguments.get(0);
+                removeNotification(id);
+                result.success(null);
+                break;
+            default:
+                result.notImplemented();
+                break;
+        }
+    }
+
+    private int createNotification(List<Object> arguments) {
+        NotificationSettings notificationSettings = notificationSettingsFactory.createFromArguments(arguments);
+        new GenerateLocalNotificationsTask(
+                getActiveContext(),
+                notificationSettings,
+                new NotificationFactory()
+        ).execute();
+        return notificationSettings.Id;
+    }
+
+    private void removeNotification(int id) {
+        NotificationManager notificationManager = getNotificationManager();
+        notificationManager.cancel(id);
+    }
+
+    private NotificationManager getNotificationManager() {
+        return (NotificationManager) getActiveContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    public static boolean handleIntent(Intent intent) {
+        if (intent == null) {
+            Log.d(LOGGING_TAG, "intent was null");
+            return false;
+        }
+
+        return checkAndInvokeCallback(intent);
+    }
+
+    private static boolean checkAndInvokeCallback(Intent intent) {
+        String callbackName = intent.getStringExtra(CALLBACK_KEY);
+        String payload = intent.getStringExtra(PAYLOAD_KEY);
+
+        if (isNullOrEmpty(callbackName)) {
+            Log.d(LOGGING_TAG, "callback name was null or empty");
+        }
+
+        return invokeCallback(callbackName, payload);
+    }
+
+    private static boolean invokeCallback(String callbackName, String payload) {
+        MethodChannel channel = LocalNotificationsService.getSharedChannel();
         if (channel != null) {
-          Log.d(LOGGING_TAG, "Invoking method " + callbackName + "('" + payload + "')");
-          channel.invokeMethod(callbackName, payload);
-          return true;
+            Log.d(LOGGING_TAG, "Invoking method " + callbackName + "('" + payload + "')");
+            channel.invokeMethod(callbackName, payload);
+            return true;
+        } else {
+            Log.d(LOGGING_TAG, "MethodChannel was null");
+            return false;
         }
-        else {
-          Log.d(LOGGING_TAG, "MethodChannel was null");
-        }
-      }
-      else {
-        Log.d(LOGGING_TAG, "callback name was null or empty");
-      }
-    }
-    else {
-      Log.d(LOGGING_TAG, "intent was null");
     }
 
-    return false;
-  }
+    private static boolean isNullOrEmpty(String callbackName) {
+        return callbackName == null || Objects.equals(callbackName, "");
+    }
 }
