@@ -14,13 +14,12 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
-import io.flutter.view.FlutterNativeView;
 
 /**
  * LocalNotificationsPlugin
  */
 public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentListener {
-  public static final String LOGGING_TAG = "LocalNotificationsPlugin";
+  public static final String LOGGING_TAG = "LocalNotificationsP";
   public static final String CHANNEL_NAME = "plugins/local_notifications";
   public static final String CREATE_NOTIFICATION = "local_notifications_createNotification";
   public static final String REMOVE_NOTIFICATION = "local_notifications_removeNotification";
@@ -100,7 +99,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
 
     new GenerateLocalNotificationsTask(getActiveContext(),
             id, title, content, imageUrl, ticker, importance, isOngoing,
-            onNotificationClick, extraActions)
+            onNotificationClick, extraActions, new NotificationFactory())
             .execute();
     return id;
   }
