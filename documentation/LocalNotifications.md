@@ -55,7 +55,7 @@ An example how it should look like can be found [HERE](https://github.com/mitchh
 
 Sending a basic notification is simple
 
-```
+```dart
 await LocalNotifications.createNotification(
     title: "Basic",
     content: "Notification"
@@ -64,10 +64,10 @@ await LocalNotifications.createNotification(
 
 When you want to create multiple notifications make sure to assign each one an unique id
 
-```
+```dart
 await LocalNotifications.createNotification(
     title: "My First Notification",
-    content: "SomeContent"
+    content: "SomeContent",
     id: 0
 );
 
@@ -82,12 +82,12 @@ await LocalNotifications.createNotification(
 
 You can delete the notifications by calling `removeNotification` with the notification id
 
-```
+```dart
 int notificationId = 0;
 
 await LocalNotifications.createNotification(
     title: "My First Notification",
-    content: "SomeContent"
+    content: "SomeContent",
     id: notificationId
 );
 
@@ -98,13 +98,13 @@ await LocalNotifications.removeNotification(notificationId);
 
 You can create notifications, which execute a custom callback in the background instead of launching the app.
 
-```
+```dart
 onNotificationClick(String payload) {
-	// payload is "some payload"
-	print('Running in background and received payload: $payload');
+    // payload is "some payload"
+    print('Running in background and received payload: $payload');
 }
 
-int id = await LocalNotifications.createNotification(
+await LocalNotifications.createNotification(
     title: "Notification",
     content: "With custom callback",
     onNotificationClick: new NotificationAction(
@@ -119,14 +119,14 @@ int id = await LocalNotifications.createNotification(
 
 You can create notifications which have multiple action buttons
 
-```
+```dart
 handleCustomActionClick(String payload) {
     if(payload == "secondAction") {
         LocalNotifications.removeNotification(0);
     }
 }
 
-int id = await LocalNotifications.createNotification(
+await LocalNotifications.createNotification(
     title: "Multiple Actions",
     content: 'With custom callbacks',
     onNotificationClick: new NotificationAction(
@@ -149,5 +149,30 @@ int id = await LocalNotifications.createNotification(
             launchesApp: false
         )
     ]
+);
+```
+
+## [Android Only] Create Notification with Large Image
+
+You can create notifications with an large image in addition to the app icon
+
+```dart
+await LocalNotifications.createNotification(
+    title: "Notification",
+    content: "With Image",
+    imageUrl: "https://flutter.io/images/catalog-widget-placeholder.png"
+);
+```
+
+
+## [Android Only] Create Ongoing / Undismissable Notifications
+
+You can create ongoing notifications. This means, the user is unable to swipe them away.
+
+```dart
+await LocalNotifications.createNotification(
+    title: "Notification",
+    content: "Can\'t swipe this away",
+    isOngoing: true
 );
 ```
