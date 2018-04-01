@@ -24,7 +24,7 @@ public class NotificationFactory implements INotifcationFactory {
                 .setContentText(settings.Body)
                 .setSmallIcon(applicationIcon)
                 .setOngoing(settings.IsOngoing)
-                .setContentIntent(settings.ContentIntent)
+                .setContentIntent(settings.OnNotificationClick.getIntent(context))
                 .setPriority(settings.Priority);
                 //.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
 

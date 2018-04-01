@@ -11,7 +11,6 @@ public class NotificationSettings {
     public String Title;
     public String Body;
     public boolean IsOngoing;
-    public PendingIntent ContentIntent;
     public Bitmap LargeIcon;
     public String Ticker;
     public NotificationAction[] ExtraActions;
