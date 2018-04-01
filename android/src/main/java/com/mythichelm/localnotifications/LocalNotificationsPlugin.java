@@ -113,7 +113,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
 
         if (isNullOrEmpty(callbackName)) {
             Log.d(LOGGING_TAG, "callback name was null or empty");
-            return;
+            return false;
         }
 
         return invokeCallback(callbackName, payload);
