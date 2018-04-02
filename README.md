@@ -21,6 +21,7 @@ A goal is to bring this dependencies down as much as possible.
 + Create Notification with multiple **Actions**
 + [Android Only] Create Notification with an **Image**
 + [Android Only] Create Notification which is **Undismissable**
++ [Android Only] Set **Priority** / **Importance** of Notification
 + **Remove** Notification by id
 
 ## Installation
