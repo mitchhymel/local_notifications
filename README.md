@@ -10,6 +10,14 @@ Changelog:
 LocalNotifications is an easy way to create notifications on both [Android](https://developer.android.com/guide/topics/ui/notifiers/notifications.html) and [iOS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/).
 This packages is also available on [Pub](https://pub.dartlang.org/packages/local_notifications).
 
+## Platforms
+
+Currently the following platforms are supported
++ Android 6.0 (SDK version 23 or higher)
++ iOS 10 or higher
+
+A goal is to bring this dependencies down as much as possible. 
+
 
 ## Features
 
