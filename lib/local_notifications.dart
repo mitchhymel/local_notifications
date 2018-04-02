@@ -88,11 +88,11 @@ class LocalNotifications {
   static Future<int> createNotification ({
     @required String title,
     @required String content,
+    int id = 0,
     String imageUrl = '',
     String ticker = '',
-    int importance = ANDROID_IMPORTANCE_DEFAULT,
+    int importance = ANDROID_IMPORTANCE_HIGH,
     bool isOngoing = false,
-    int id = 0,
     bool presentWhileAppOpen = true,
     NotificationAction onNotificationClick = NotificationAction.DEFAULT,
     List<NotificationAction> actions = const []

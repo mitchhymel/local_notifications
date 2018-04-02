@@ -4,6 +4,7 @@
 .idea
 .packages
 .pub/
+.gradle/
 build/
 ios/.generated/
 packages
