@@ -1,10 +1,5 @@
 # LocalNotification Flutter Plugin
 
-```
-Changelog:
-    2018-03-30: Initial Creation
-```
-
 ## Introduction
 
 LocalNotifications is an easy way to create notifications on both [Android](https://developer.android.com/guide/topics/ui/notifiers/notifications.html) and [iOS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/).
