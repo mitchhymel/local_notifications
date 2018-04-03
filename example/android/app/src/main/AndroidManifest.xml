@@ -20,7 +20,7 @@
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <!-- This keeps the window background of the activity showing
@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <service
-                android:name="com.mythichelm.localnotifications.LocalNotificationsService"
+                android:name="com.mythichelm.localnotifications.services.LocalNotificationsService"
                 android:exported="false" />
     </application>
 </manifest>

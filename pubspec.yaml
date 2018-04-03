@@ -4,10 +4,11 @@ version: 0.0.1
 author: Mitch Hymel <mitchell.hymel@gmail.com>
 homepage: https://github.com/mitchhymel/local_notifications
 
+
 dependencies:
   flutter:
     sdk: flutter
-  meta: ^1.1.1
+  meta: any
 
 environment:
     sdk: ">=1.8.0 <2.0.0"
