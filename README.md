@@ -3,7 +3,8 @@
 ## Introduction
 
 LocalNotifications is an easy way to create notifications on both [Android](https://developer.android.com/guide/topics/ui/notifiers/notifications.html) and [iOS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/).
-This packages is also available on [Pub](https://pub.dartlang.org/packages/local_notifications).
+
+[![pub package](https://img.shields.io/pub/v/local_notifications.svg)](https://pub.dartlang.org/packages/local_notifications)
 
 ## Platforms
 
