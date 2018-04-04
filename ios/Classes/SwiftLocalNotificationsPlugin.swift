@@ -40,12 +40,15 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args : NSArray = call.arguments as! NSArray
         if (call.method == SwiftLocalNotificationsPlugin.CREATE_NOTIFICATION) {
-            result(createNotification(args: args))
+            createNotification(args: args)
+            result(nil)
         } else if (call.method == SwiftLocalNotificationsPlugin.REMOVE_NOTIFICATION) {
             let notifId : Int = args[0] as! Int
-            result(removeNotification(id: notifId))
+            removeNotification(id: notifId)
+            result(nil)
         } else {
             customDebugPrint(text: "No method found with name '\(call.method)")
+            result(FlutterMethodNotImplemented)
         }
     }
     struct LocalNotificationsError: Error {
@@ -78,7 +81,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         var presentWhileAppOpen = true
     }
     
-    func createNotification(args: NSArray) -> Int {
+    func createNotification(args: NSArray) {
         let title : String = args[0] as! String
         let contentStr : String = args[1] as! String
         let imageUrl : String = args[2] as! String
@@ -110,7 +113,6 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         }
         
         createIosNotification(notification: notification, onNotificationClick: onNotificationClick, extraActions: extraActions)
-        return notification.id
     }
     
     private func createIosNotification(notification: Notification, onNotificationClick: NotificationAction, extraActions: Array<NotificationAction>) {
@@ -154,10 +156,9 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         center.add(request)
     }
     
-    func removeNotification(id: Int) -> Int {
+    func removeNotification(id: Int) {
         let center = UNUserNotificationCenter.current()
         center.removeDeliveredNotifications(withIdentifiers: [String(id)])
-        return id
     }
     
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
