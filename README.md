@@ -62,7 +62,8 @@ Sending a basic notification is simple
 ```
 await LocalNotifications.createNotification(
     title: "Basic",
-    content: "Notification"
+    content: "Notification",
+    id: 0
 );
 ```
 
@@ -111,6 +112,7 @@ onNotificationClick(String payload) {
 int id = await LocalNotifications.createNotification(
     title: "Notification",
     content: "With custom callback",
+    id: 0,
     onNotificationClick: new NotificationAction(
         actionText: "some action", // Note: only works for iOS
         callback: onNotificationClick,
@@ -133,6 +135,7 @@ handleCustomActionClick(String payload) {
 int id = await LocalNotifications.createNotification(
     title: "Multiple Actions",
     content: 'With custom callbacks',
+    id: 0,
     onNotificationClick: new NotificationAction(
         actionText: "Some action",
         callback: onNotificationClick,
