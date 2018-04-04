@@ -10,3 +10,4 @@ ios/.generated/
 packages
 pubspec.lock
 Podfile.lock
+out/

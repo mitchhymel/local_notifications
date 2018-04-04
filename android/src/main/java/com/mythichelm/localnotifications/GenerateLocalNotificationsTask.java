@@ -50,6 +50,7 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
 
+        notificationSettings.LargeIcon = result;
         Notification notification = createNotification();
         NotificationManager notificationManager = getNotificationManager();
 

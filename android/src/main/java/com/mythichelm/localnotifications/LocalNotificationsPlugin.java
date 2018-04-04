@@ -66,7 +66,8 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
         List<Object> arguments = call.arguments();
         switch (call.method) {
             case CREATE_NOTIFICATION:
-                result.success(createNotification(arguments));
+                createNotification(arguments);
+                result.success(null);
                 break;
             case REMOVE_NOTIFICATION:
                 int id = (int) arguments.get(0);
@@ -79,14 +80,13 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
         }
     }
 
-    private int createNotification(List<Object> arguments) {
+    private void createNotification(List<Object> arguments) {
         NotificationSettings notificationSettings = notificationSettingsFactory.createFromArguments(arguments);
         new GenerateLocalNotificationsTask(
                 getActiveContext(),
                 notificationSettings,
                 new NotificationFactory()
         ).execute();
-        return notificationSettings.Id;
     }
 
     private void removeNotification(int id) {

@@ -85,10 +85,10 @@ class LocalNotifications {
   ///
   /// The value of [actions] determines the actions of the notification.
   /// Both android and ios support a limited number of actions.
-  static Future<int> createNotification ({
+  static Future<Null> createNotification ({
     @required String title,
     @required String content,
-    int id = 0,
+    @required int id,
     String imageUrl = '',
     String ticker = '',
     int importance = ANDROID_IMPORTANCE_HIGH,
@@ -140,7 +140,7 @@ class LocalNotifications {
 
   /// Removes a local notification with the provided [id].
   static Future<Null> removeNotification(int id) async {
-    return await _channel.invokeMethod(_removeNotification, [id]);
+    await _channel.invokeMethod(_removeNotification, [id]);
   }
 
   static String _getCallbackNameFromAction(NotificationAction action) {

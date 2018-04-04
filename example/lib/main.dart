@@ -27,15 +27,16 @@ class MyAppState extends State<MyApp> {
     LocalNotifications.removeNotification(0);
   }
 
-  var staticId = 1;
-  void removeNotify(String payload) {
-    LocalNotifications.removeNotification(staticId);
+
+  void removeNotify(String payload) async {
+    await LocalNotifications.removeNotification(0);
   }
 
   Widget _getBasicNotification() {
     return new RaisedButton(
       onPressed: () async {
-        staticId = await LocalNotifications.createNotification(
+        await LocalNotifications.createNotification(
+          id: 0,
           title: 'Basic',
           content: 'some basic notification',
           isOngoing: false,
@@ -52,7 +53,8 @@ class MyAppState extends State<MyApp> {
   Widget _getNotificationWithImage() {
     return new RaisedButton(
         onPressed: () async {
-          int id = await LocalNotifications.createNotification(
+          await LocalNotifications.createNotification(
+            id: 0,
             title: 'Image',
             content: 'some notification with an image',
             imageUrl: _imageUrl,
@@ -65,7 +67,8 @@ class MyAppState extends State<MyApp> {
   Widget _getUndismissableNotification() {
     return new RaisedButton(
         onPressed: () async {
-          int id = await LocalNotifications.createNotification(
+          await LocalNotifications.createNotification(
+              id: 0,
               title: 'No swiping',
               content: 'Can\'t swipe this away',
               imageUrl: _imageUrl,
@@ -90,7 +93,8 @@ class MyAppState extends State<MyApp> {
   Widget _getNotificationWithCallbackAndPayload() {
     return new RaisedButton(
       onPressed: () async {
-        int id = await LocalNotifications.createNotification(
+        await LocalNotifications.createNotification(
+          id: 0,
             title: 'Callback and payload notif',
             content: 'Some content',
             onNotificationClick: new NotificationAction(
@@ -107,7 +111,8 @@ class MyAppState extends State<MyApp> {
   Widget _getNotificationWithCallbackAndPayloadInBackground() {
     return new RaisedButton(
       onPressed: () async {
-        int id = await LocalNotifications.createNotification(
+        await LocalNotifications.createNotification(
+          id: 0,
           title: 'Callback and payload notif',
           content: 'Some content',
           onNotificationClick: new NotificationAction(
@@ -125,7 +130,8 @@ class MyAppState extends State<MyApp> {
   Widget _getNotificationWithMultipleActionsAndPayloads() {
     return new RaisedButton(
       onPressed: () async {
-        int id = await LocalNotifications.createNotification(
+        await LocalNotifications.createNotification(
+            id: 0,
             title: 'Multiple actions',
             content: '... and unique callbacks and/or payloads for each',
             imageUrl: _imageUrl,
@@ -165,7 +171,8 @@ class MyAppState extends State<MyApp> {
     return new RaisedButton(
         child: new Text('Create notification with anonymous function as callback using a callbackName'),
         onPressed: () async {
-          int id = await LocalNotifications.createNotification(
+          await LocalNotifications.createNotification(
+            id: 0,
             title: 'Anonymous callback',
             content: '... using anonymous callback with provided callbackName',
             onNotificationClick: new NotificationAction(
