@@ -35,6 +35,8 @@ dependencies:
 
 Then run `flutter packages get` to install the package.
 
+For iOS, There is an issue with the flutter framework (https://github.com/flutter/flutter/issues/16097) that will cause build errors in projects initialized with objective-c iOS code when using plugins written in swift (as is the case with this plugin). To get around this for an existing project, see [this comment](https://github.com/mitchhymel/local_notifications/issues/5#issuecomment-377344269). For new projects, just create the project using swift with ```flutter create -i swift```
+
 ### Add Service to AndroidManifest
 
 To have the notification run code in the background (on click of either the notification itself or its actions), you must add the LocalNotificationsService to your app's manifest.
