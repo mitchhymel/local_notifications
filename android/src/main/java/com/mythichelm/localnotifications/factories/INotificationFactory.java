@@ -5,6 +5,6 @@ import android.content.Context;
 
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 
-public interface INotifcationFactory {
+public interface INotificationFactory {
     Notification createNotification(NotificationSettings settings, Context context);
 }

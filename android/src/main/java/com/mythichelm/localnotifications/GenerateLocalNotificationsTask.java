@@ -1,14 +1,16 @@
 package com.mythichelm.localnotifications;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 
 import com.mythichelm.localnotifications.entities.NotificationSettings;
-import com.mythichelm.localnotifications.factories.INotifcationFactory;
+import com.mythichelm.localnotifications.factories.INotificationFactory;
 
 import java.io.*;
 import java.lang.ref.WeakReference;
@@ -17,13 +19,13 @@ import java.net.*;
 public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitmap> {
     private final WeakReference<Context> mContext;
     private final NotificationSettings notificationSettings;
-    private INotifcationFactory notifcationFactory;
+    private INotificationFactory notificationFactory;
 
-    GenerateLocalNotificationsTask(Context context, NotificationSettings notificationSettings, INotifcationFactory notifcationFactory) {
+    GenerateLocalNotificationsTask(Context context, NotificationSettings notificationSettings, INotificationFactory notificationFactory) {
         super();
         this.mContext = new WeakReference<>(context);
         this.notificationSettings = notificationSettings;
-        this.notifcationFactory = notifcationFactory;
+        this.notificationFactory = notificationFactory;
     }
 
     @Override
@@ -54,12 +56,15 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
         Notification notification = createNotification();
         NotificationManager notificationManager = getNotificationManager();
 
-        if (notificationManager != null)
+        if (notificationManager != null) {
+            LocalNotificationsPlugin.customLog("notificationManager.notify");
             notificationManager.notify(notificationSettings.Id, notification);
+        }
+
     }
 
     private Notification createNotification() {
-        return this.notifcationFactory
+        return this.notificationFactory
                 .createNotification(notificationSettings, this.mContext.get());
     }
 

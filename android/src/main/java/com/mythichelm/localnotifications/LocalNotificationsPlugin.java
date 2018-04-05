@@ -1,5 +1,7 @@
 package com.mythichelm.localnotifications;
 
+import android.app.NotificationChannel;
+import android.os.Build;
 import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import com.mythichelm.localnotifications.factories.NotificationSettingsFactory;
 import com.mythichelm.localnotifications.services.LocalNotificationsService;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,8 +33,14 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
     public static final String CHANNEL_NAME = "plugins/local_notifications";
     public static final String CREATE_NOTIFICATION = "local_notifications_createNotification";
     public static final String REMOVE_NOTIFICATION = "local_notifications_removeNotification";
+    public static final String CREATE_NOTIFICATION_CHANNEL =
+            "local_notifications_createNotificationChannel";
+    public static final String REMOVE_NOTIFICATION_CHANNEL  =
+            "local_notifications_removeNotificationChannel";
     public static final String CALLBACK_KEY = "callback_key";
     public static final String PAYLOAD_KEY = "payload_key";
+
+    public static boolean loggingEnabled = false;
 
     private final Registrar registrar;
     private final INotificationSettingsFactory notificationSettingsFactory = new NotificationSettingsFactory();
@@ -56,6 +65,12 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
         return (registrar.activity() != null) ? registrar.activity() : registrar.context();
     }
 
+    public static void customLog(String text) {
+        if (loggingEnabled) {
+            Log.d(LOGGING_TAG, "(Android): " + text);
+        }
+    }
+
     @Override
     public boolean onNewIntent(Intent intent) {
         return handleIntent(intent);
@@ -72,6 +87,14 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
             case REMOVE_NOTIFICATION:
                 int id = (int) arguments.get(0);
                 removeNotification(id);
+                result.success(null);
+                break;
+            case CREATE_NOTIFICATION_CHANNEL:
+                createNotificationChannel(arguments);
+                result.success(null);
+                break;
+            case REMOVE_NOTIFICATION_CHANNEL:
+                removeNotificationChannel(arguments);
                 result.success(null);
                 break;
             default:
@@ -94,13 +117,40 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
         notificationManager.cancel(id);
     }
 
+    private void createNotificationChannel(List<Object> arguments) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = getNotificationManager();
+            if (notificationManager != null) {
+                HashMap<String, Object> map = (HashMap<String, Object>)arguments.get(0);
+                String channelId = (String) map.get("id");
+                String name = (String) map.get("name");
+                String description = (String) map.get("description");
+                int importance = (int) map.get("importance");
+
+                NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+                channel.setDescription(description);
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private void removeNotificationChannel(List<Object> arguments) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = getNotificationManager();
+            if (notificationManager != null) {
+                String channelId = (String)arguments.get(0);
+                notificationManager.deleteNotificationChannel(channelId);
+            }
+        }
+    }
+
     private NotificationManager getNotificationManager() {
         return (NotificationManager) getActiveContext().getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public static boolean handleIntent(Intent intent) {
         if (intent == null) {
-            Log.d(LOGGING_TAG, "intent was null");
+            customLog("intent was null");
             return false;
         }
 
@@ -112,7 +162,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
         String payload = intent.getStringExtra(PAYLOAD_KEY);
 
         if (isNullOrEmpty(callbackName)) {
-            Log.d(LOGGING_TAG, "callback name was null or empty");
+            customLog("callback name was null or empty");
             return false;
         }
 
@@ -122,11 +172,11 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
     private static boolean invokeCallback(String callbackName, String payload) {
         MethodChannel channel = LocalNotificationsService.getSharedChannel();
         if (channel != null) {
-            Log.d(LOGGING_TAG, "Invoking method " + callbackName + "('" + payload + "')");
+            customLog(String.format("Invoking method %1$s('%2$s')", callbackName, payload));
             channel.invokeMethod(callbackName, payload);
             return true;
         } else {
-            Log.d(LOGGING_TAG, "MethodChannel was null");
+            customLog("MethodChannel was null");
             return false;
         }
     }
@@ -134,4 +184,5 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
     private static boolean isNullOrEmpty(String callbackName) {
         return callbackName == null || Objects.equals(callbackName, "");
     }
+
 }

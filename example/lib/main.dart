@@ -32,6 +32,35 @@ class MyAppState extends State<MyApp> {
     await LocalNotifications.removeNotification(0);
   }
 
+  static const AndroidNotificationChannel channel = const AndroidNotificationChannel(
+      id: 'default_notification',
+      name: 'Default',
+      description: 'Grant this app the ability to show notifications',
+      importance: LocalNotifications.ANDROID_IMPORTANCE_DEFAULT
+  );
+
+  Widget _getAddNotifCategoryButton() {
+    return new RaisedButton(
+      child: new Text('Create a notification category'),
+      onPressed: () async {
+        await LocalNotifications.createAndroidNotificationChannel(
+            channel: channel
+        );
+      },
+    );
+  }
+
+  Widget _getRemoveNotifCategoryButton() {
+    return new RaisedButton(
+      child: new Text('Remove a notification category'),
+      onPressed: () async {
+        await LocalNotifications.removeAndroidNotificationChannel(
+            channel: channel
+        );
+      },
+    );
+  }
+
   Widget _getBasicNotification() {
     return new RaisedButton(
       onPressed: () async {
@@ -39,11 +68,14 @@ class MyAppState extends State<MyApp> {
           id: 0,
           title: 'Basic',
           content: 'some basic notification',
+          importance: LocalNotifications.ANDROID_IMPORTANCE_DEFAULT,
           isOngoing: false,
+          channel: channel,
           onNotificationClick: new NotificationAction(
               actionText: "some action",
               callback: removeNotify,
-              payload: "")
+              payload: ""
+          )
         );
       },
       child: new Text('Create basic notification'),
@@ -208,6 +240,8 @@ class MyAppState extends State<MyApp> {
               _getNotificationWithCallbackAndPayloadInBackground(),
               _getNotificationWithMultipleActionsAndPayloads(),
               _getNotificationWithAnonymousFunctionAsCallback(),
+              _getAddNotifCategoryButton(),
+              _getRemoveNotifCategoryButton(),
               new Text(_text ?? "Click a notification with a payload to see the results here")
             ],
           ),

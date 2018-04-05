@@ -1,7 +1,11 @@
+library LocalNotifications;
 import 'dart:async';
 import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/services.dart';
+
+
 
 /// Class that describes a notification action.
 ///
@@ -34,6 +38,80 @@ class NotificationAction {
       callback: null,
       payload: ''
   );
+
+  Map _toMapForPlatformChannel() {
+    return {
+      'callback': _getCallbackNameFromAction(this),
+      'actionText': actionText,
+      'payload': payload,
+      'launchesApp': launchesApp,
+    };
+  }
+
+  static String _getCallbackNameFromAction(NotificationAction action) {
+    return action.callbackName ?? _nameOfFunction(action.callback);
+  }
+
+  // Extracts the name of a top-level function from the .toString() of its
+  // closure-ization. The Java side of this plugin accepts the entrypoint into
+  // Dart code as a string. However, the Dart side of this API can't use a
+  // string to specify the entrypoint, otherwise it won't be visited by Dart's
+  // AOT compiler.
+  static String _nameOfFunction(Function(String) callback) {
+    if (callback == null) {
+      return '';
+    }
+
+    final String longName = callback.toString();
+    final int functionIndex = longName.indexOf('Function');
+    if (functionIndex == -1) return null;
+    final int openQuote = longName.indexOf("'", functionIndex + 1);
+    if (openQuote == -1) return null;
+    final int closeQuote = longName.indexOf("'", openQuote + 1);
+    if (closeQuote == -1) return null;
+    return longName.substring(openQuote + 1, closeQuote);
+  }
+}
+
+/// Class that describes an Android Notification Channel (for android 8.0+)
+///
+/// The [name] is how the user identifies your notification channels, while [id]
+/// is how your app should identify the channels and what you must use when
+/// creating notifications. [id] is also used to with
+/// [removeAndroidNotificationChannel].
+///
+/// The [description] is meant to provide a short description of this channel.
+///
+/// The value of [importance] determines the default value for notifications
+/// on this channel.
+///
+/// Android 8.0 added Notification Channels, which allow users to opt in or
+/// out of notifications more granularly than at the app level.
+/// https://developer.android.com/guide/topics/ui/notifiers/notifications.html#ManageChannels
+///
+/// For managing notification channels, reference:
+/// https://developer.android.com/training/notify-user/channels.html
+class AndroidNotificationChannel {
+  final String id;
+  final String name;
+  final String description;
+  final int importance;
+
+  const AndroidNotificationChannel({
+    @required this.id,
+    @required this.name,
+    @required this.description,
+    @required this.importance
+  });
+
+  Map _toMapForPlatformChannel() {
+    return {
+      'id': this.id,
+      'name': this.name,
+      'description': this.description,
+      'importance': this.importance,
+    };
+  }
 }
 
 class LocalNotifications {
@@ -41,8 +119,14 @@ class LocalNotifications {
     const MethodChannel(CHANNEL_NAME);
 
   static const String CHANNEL_NAME = 'plugins/local_notifications';
-  static const String _createNotification = 'local_notifications_createNotification';
-  static const String _removeNotification = 'local_notifications_removeNotification';
+  static const String _createNotification =
+      'local_notifications_createNotification';
+  static const String _removeNotification =
+      'local_notifications_removeNotification';
+  static const String _createNotificationChannel =
+      'local_notifications_createNotificationChannel';
+  static const String _removeNotificationChannel =
+      'local_notifications_removeNotificationChannel';
 
   static const int ANDROID_IMPORTANCE_DEFAULT = 3;
   static const int ANDROID_IMPORTANCE_HIGH = 4;
@@ -50,11 +134,11 @@ class LocalNotifications {
   static const int ANDROID_IMPORTANCE_MAX = 5;
   static const int ANDROID_IMPORTANCE_MIN = 1;
 
-  static bool loggingEnabled = false;
+  static bool loggingEnabled = true;
 
   static void _log(String text) {
     if (loggingEnabled) {
-      print('LocalNotificationsPlugin: $text');
+      print('LocalNotificationsPlugin (Dart): $text');
     }
   }
 
@@ -85,7 +169,7 @@ class LocalNotifications {
   ///
   /// The value of [actions] determines the actions of the notification.
   /// Both android and ios support a limited number of actions.
-  static Future<Null> createNotification ({
+  static Future<bool> createNotification ({
     @required String title,
     @required String content,
     @required int id,
@@ -95,9 +179,10 @@ class LocalNotifications {
     bool isOngoing = false,
     bool presentWhileAppOpen = true,
     NotificationAction onNotificationClick = NotificationAction.DEFAULT,
-    List<NotificationAction> actions = const []
+    List<NotificationAction> actions = const [],
+    AndroidNotificationChannel channel,
   }) async {
-    List<String> callbacks = actions.map((action) => _getCallbackNameFromAction(action)).toList();
+    List<String> callbacks = actions.map((action) => NotificationAction._getCallbackNameFromAction(action)).toList();
     List<String> actionTexts = actions.map((action) => action.actionText).toList();
     List<String> intentPayloads = actions.map((action) => action.payload).toList();
     List<bool> launchesApps = actions.map((action) => action.launchesApp).toList();
@@ -106,7 +191,7 @@ class LocalNotifications {
       var payload = method.arguments;
       List<NotificationAction> actionsToCheck = []..add(onNotificationClick)..addAll(actions);
       for (NotificationAction action in actionsToCheck) {
-        String functionName = _getCallbackNameFromAction(action);
+        String functionName = NotificationAction._getCallbackNameFromAction(action);
         if (method.method == functionName) {
           _log('In dart code after action is clicked. Calling $functionName("$payload")');
           action.callback(payload);
@@ -125,7 +210,7 @@ class LocalNotifications {
       importance,
       isOngoing,
       id,
-      _getCallbackNameFromAction(onNotificationClick),
+      NotificationAction._getCallbackNameFromAction(onNotificationClick),
       onNotificationClick.actionText,
       onNotificationClick.payload,
       onNotificationClick.launchesApp,
@@ -135,7 +220,25 @@ class LocalNotifications {
       launchesApps,
       presentWhileAppOpen
     ];
-    await _channel.invokeMethod(_createNotification, args);
+
+    List extraActionsAsMaps = actions.map((a) => a._toMapForPlatformChannel()).toList();
+
+    Map argsMap = {
+      'title': title,
+      'content': content,
+      'imageUrl': imageUrl,
+      'ticker': ticker,
+      'importance': importance,
+      'isOngoing': isOngoing,
+      'id': id,
+      'presentWhileAppOpen': presentWhileAppOpen,
+      'onNotificationClick': onNotificationClick._toMapForPlatformChannel(),
+      'extraActions': extraActionsAsMaps,
+      'channel': channel == null ? '' : channel.id,
+    };
+
+    await _channel.invokeMethod(_createNotification, [argsMap]);
+    return true;
   }
 
   /// Removes a local notification with the provided [id].
@@ -143,29 +246,30 @@ class LocalNotifications {
     await _channel.invokeMethod(_removeNotification, [id]);
   }
 
-  static String _getCallbackNameFromAction(NotificationAction action) {
-    return action.callbackName ?? _nameOfFunction(action.callback);
-  }
-
-  // Extracts the name of a top-level function from the .toString() of its
-  // closure-ization. The Java side of this plugin accepts the entrypoint into
-  // Dart code as a string. However, the Dart side of this API can't use a
-  // string to specify the entrypoint, otherwise it won't be visited by Dart's
-  // AOT compiler.
-  static String _nameOfFunction(Function(String) callback) {
-    if (callback == null) {
-      return '';
+  /// (Android only) Creates a notification channel
+  ///
+  /// This is necessary for your app to be able to send notifications on
+  /// Android 8.0+
+  static Future<Null> createAndroidNotificationChannel({
+      @required AndroidNotificationChannel channel
+  }) async {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      await _channel.invokeMethod(_createNotificationChannel, [channel._toMapForPlatformChannel()]);
     }
-
-    final String longName = callback.toString();
-    final int functionIndex = longName.indexOf('Function');
-    if (functionIndex == -1) return null;
-    final int openQuote = longName.indexOf("'", functionIndex + 1);
-    if (openQuote == -1) return null;
-    final int closeQuote = longName.indexOf("'", openQuote + 1);
-    if (closeQuote == -1) return null;
-    return longName.substring(openQuote + 1, closeQuote);
   }
+
+  /// (Android only) Removes a notification channel
+  ///
+  /// This only works on Android 8.0+. Otherwise it is a no-op.
+  static Future<Null> removeAndroidNotificationChannel({
+      @required AndroidNotificationChannel channel
+  }) async {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      await _channel.invokeMethod(_removeNotificationChannel, [channel.id]);
+    }
+  }
+
+
 
 }
 

@@ -8,12 +8,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
-import android.provider.Settings;
+import android.os.Build;
 
 import com.mythichelm.localnotifications.entities.NotificationAction;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 
-public class NotificationFactory implements INotifcationFactory {
+public class NotificationFactory implements INotificationFactory {
 
     @Override
     public Notification createNotification(NotificationSettings settings, Context context) {
@@ -28,6 +28,8 @@ public class NotificationFactory implements INotifcationFactory {
                 .setPriority(settings.Priority);
                 //.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
 
+
+        setChannelId(builder, settings);
         setLargeIcon(builder, settings);
         setTicker(builder, settings);
         addActions(builder, settings, context, applicationIcon);
@@ -41,6 +43,12 @@ public class NotificationFactory implements INotifcationFactory {
             PendingIntent intent = extraAction.getIntent(context);
             Notification.Action action = new Notification.Action.Builder(icon, extraAction.actionText, intent).build();
             builder.addAction(action);
+        }
+    }
+
+    private void setChannelId(Notification.Builder builder, NotificationSettings settings) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId(settings.Channel);
         }
     }
 

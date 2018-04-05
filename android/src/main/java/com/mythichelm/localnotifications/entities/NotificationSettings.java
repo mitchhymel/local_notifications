@@ -18,4 +18,5 @@ public class NotificationSettings {
     public String ImageUrl;
     public int Id;
     public NotificationAction OnNotificationClick;
+    public String Channel;
 }

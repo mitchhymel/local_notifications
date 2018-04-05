@@ -4,6 +4,7 @@ import com.mythichelm.localnotifications.entities.NotificationAction;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,41 +15,43 @@ import java.util.List;
 public class NotificationSettingsFactory implements INotificationSettingsFactory {
     @Override
     public NotificationSettings createFromArguments(List<Object> arguments) {
+        HashMap<String, Object> map = (HashMap<String, Object>)arguments.get(0);
+
         NotificationSettings settings = new NotificationSettings();
-        settings.Title = (String)arguments.get(0);
-        settings.Body = (String)arguments.get(1);
-        settings.ImageUrl = (String)arguments.get(2);
-        settings.Ticker = (String)arguments.get(3);
-        settings.Priority = (int)arguments.get(4);
-        settings.IsOngoing = (boolean)arguments.get(5);
-        settings.Id = (int)arguments.get(6);
-        settings.OnNotificationClick = getNotifcationAction(arguments);
-        settings.ExtraActions = getExtraActions(arguments);
+        settings.Title = (String)map.get("title");
+        settings.Body = (String)map.get("content");
+        settings.ImageUrl = (String)map.get("imageUrl");
+        settings.Ticker = (String)map.get("ticker");
+        settings.Priority = (int)map.get("importance");
+        settings.IsOngoing = (boolean)map.get("isOngoing");
+        settings.Id = (int)map.get("id");
+        settings.Channel = (String)map.get("channel");
+
+        HashMap<String, Object> onNotifClickMap = (HashMap<String, Object>)map.get("onNotificationClick");
+        settings.OnNotificationClick = getNotificationAction(onNotifClickMap);
+
+        List<Object> extraActionsList = (List<Object>)map.get("extraActions");
+        settings.ExtraActions = getExtraActions(extraActionsList);
+
         return settings;
     }
 
-    private NotificationAction[] getExtraActions(List<Object> arguments) {
-        List<String> actionsCallbacks = (List<String>)arguments.get(11);
-        List<String> actionsTexts = (List<String>)arguments.get(12);
-        List<String> actionsIntentPayloads = (List<String>)arguments.get(13);
-        List<Boolean> actionsLaunchesApp = (List<Boolean>)arguments.get(14);
-
+    private NotificationAction[] getExtraActions(List<Object> extraActionsList) {
         List<NotificationAction> extraActions = new ArrayList<>();
-        for (int i = 0; i < actionsCallbacks.size(); i++) {
-            String callback = actionsCallbacks.get(i);
-            String text = actionsTexts.get(i);
-            String payload = actionsIntentPayloads.get(i);
-            boolean launch = actionsLaunchesApp.get(i);
-            extraActions.add(new NotificationAction(callback, text, payload, launch));
+        for (Object obj : extraActionsList) {
+            HashMap<String, Object> actionAsMap = (HashMap<String, Object>)obj;
+            NotificationAction extraAction = getNotificationAction(actionAsMap);
+            extraActions.add(extraAction);
         }
+
         return extraActions.toArray(new NotificationAction[0]);
     }
 
-    private NotificationAction getNotifcationAction(List<Object> arguments) {
-        String callbackName = (String)arguments.get(7);
-        String actionText = (String)arguments.get(8);
-        String intentPayload = (String)arguments.get(9);
-        boolean launchesApp = (boolean)arguments.get(10);
+    private NotificationAction getNotificationAction(HashMap<String, Object> map) {
+        String callbackName = (String)map.get("callback");
+        String actionText = (String)map.get("actionText");
+        String intentPayload = (String)map.get("intentPayload");
+        boolean launchesApp = (boolean)map.get("launchesApp");
         return new NotificationAction(callbackName, actionText, intentPayload, launchesApp);
     }
 }
