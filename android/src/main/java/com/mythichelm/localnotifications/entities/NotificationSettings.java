@@ -19,4 +19,5 @@ public class NotificationSettings {
     public int Id;
     public NotificationAction OnNotificationClick;
     public String Channel;
+    public long[] VibratePattern;
 }

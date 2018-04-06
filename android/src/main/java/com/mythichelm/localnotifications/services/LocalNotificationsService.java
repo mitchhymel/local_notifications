@@ -39,6 +39,7 @@ public class LocalNotificationsService extends IntentService {
 
     @Override
     public void onHandleIntent(Intent intent) {
+        LocalNotificationsPlugin.customLog("LocalNotificationsService handling intent in the background");
         LocalNotificationsPlugin.handleIntent(intent);
     }
 }

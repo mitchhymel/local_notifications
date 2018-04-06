@@ -11,7 +11,6 @@ part of local_notifications;
 /// The value of [callbackName] must be provided if [callback] is an anonymous
 /// function. Else this value will be populated by this library from the
 /// name of [callback].
-///
 class NotificationAction {
   final Function(String) callback;
   final String actionText;

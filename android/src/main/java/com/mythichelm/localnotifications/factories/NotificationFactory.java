@@ -32,7 +32,7 @@ public class NotificationFactory implements INotificationFactory {
                 .setPriority(settings.Priority);
                 //.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
 
-
+        setVibratePattern(builder, settings);
         setChannelId(builder, settings);
         setLargeIcon(builder, settings);
         setTicker(builder, settings);
@@ -40,6 +40,16 @@ public class NotificationFactory implements INotificationFactory {
 
         LocalNotificationsPlugin.customLog("Finished creating Notification from NotificationSettings");
         return builder.build();
+    }
+
+    private void setVibratePattern(Notification.Builder builder, NotificationSettings settings) {
+        // if it's an empty list, then fall back to default
+        if (settings.VibratePattern.length > 0) {
+            // for SDK 26+, the notification channel decides the vibrate pattern
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                builder.setVibrate(settings.VibratePattern);
+            }
+        }
     }
 
 

@@ -85,7 +85,8 @@ class MyAppState extends State<MyApp> {
           androidSettings: new AndroidSettings(
             isOngoing: false,
             channel: channel,
-            importance: AndroidNotificationImportance.DEFAULT
+            importance: AndroidNotificationImportance.DEFAULT,
+            vibratePattern: [1000, 1000, 1000, 1000]
           ),
           onNotificationClick: new NotificationAction(
               actionText: "some action",

@@ -34,21 +34,10 @@ class LocalNotifications {
   /// Creates a local notification with a title using [title] and content
   /// using [content].
   ///
-  /// Only on Android, if [imageUrl] is provided, then the
+  /// The notification will be created with the value provided by [id].
+  ///
+  /// (Currently only on Android), if [imageUrl] is provided, then the
   /// notification will contain this image.
-  ///
-  /// Only on Android, the value provided by [importance] will be used
-  /// by the OS to determine how to rank your notification against other
-  /// apps' notifications
-  ///
-  /// Only on Android, the value of [isOngoing] determines if the
-  /// notification can be dismissed or not.
-  ///
-  /// The notification will be created with the value provided by [id]. If no
-  /// value is provided, the notification id will default to 0
-  ///
-  /// Only on iOS, the value of [presentWhileAppOpen] determines if the
-  /// notification will show to the user if the app is in the forefront
   ///
   /// The value of [onNotificationClick] determines what happens when the
   /// notification is clicked. If no value is provided, the default action is

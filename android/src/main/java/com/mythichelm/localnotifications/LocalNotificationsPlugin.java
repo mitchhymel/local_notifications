@@ -14,6 +14,7 @@ import com.mythichelm.localnotifications.factories.NotificationSettingsFactory;
 import com.mythichelm.localnotifications.services.LocalNotificationsService;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -134,9 +135,12 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
                 String name = (String) map.get("name");
                 String description = (String) map.get("description");
                 int importance = (int) map.get("importance");
+                long[] vibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
+                        (ArrayList<Integer>)map.get("vibratePattern"));
 
                 NotificationChannel channel = new NotificationChannel(channelId, name, importance);
                 channel.setDescription(description);
+                channel.setVibrationPattern(vibratePattern);
                 notificationManager.createNotificationChannel(channel);
             }
         }
@@ -191,6 +195,14 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
 
     private static boolean isNullOrEmpty(String callbackName) {
         return callbackName == null || Objects.equals(callbackName, "");
+    }
+
+    public static long[] intArrayListToLongArray(ArrayList<Integer> list) {
+        long[] result = new long[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i);
+        }
+        return result;
     }
 
 }
