@@ -37,6 +37,8 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
             "local_notifications_createNotificationChannel";
     public static final String REMOVE_NOTIFICATION_CHANNEL  =
             "local_notifications_removeNotificationChannel";
+    public static final String SET_LOGGING = "local_notifications_setLogging";
+
     public static final String CALLBACK_KEY = "callback_key";
     public static final String PAYLOAD_KEY = "payload_key";
 
@@ -79,6 +81,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
     @Override
     public void onMethodCall(MethodCall call, Result result) {
         List<Object> arguments = call.arguments();
+        LocalNotificationsPlugin.customLog("In onMethodCall for method '" + call.method + "'");
         switch (call.method) {
             case CREATE_NOTIFICATION:
                 createNotification(arguments);
@@ -95,6 +98,11 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
                 break;
             case REMOVE_NOTIFICATION_CHANNEL:
                 removeNotificationChannel(arguments);
+                result.success(null);
+                break;
+            case SET_LOGGING:
+                boolean value = (boolean)arguments.get(0);
+                loggingEnabled=value;
                 result.success(null);
                 break;
             default:

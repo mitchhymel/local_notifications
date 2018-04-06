@@ -9,7 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import com.google.gson.Gson;
 
+import com.mythichelm.localnotifications.LocalNotificationsPlugin;
 import com.mythichelm.localnotifications.entities.NotificationAction;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 
@@ -17,6 +19,8 @@ public class NotificationFactory implements INotificationFactory {
 
     @Override
     public Notification createNotification(NotificationSettings settings, Context context) {
+        LocalNotificationsPlugin.customLog("Creating Notification from settings: "
+                + new Gson().toJson(settings));
         Icon applicationIcon = getApplicationIcon(context);
 
         @SuppressLint("WrongConstant") Notification.Builder builder = new Notification.Builder(context)
@@ -34,6 +38,7 @@ public class NotificationFactory implements INotificationFactory {
         setTicker(builder, settings);
         addActions(builder, settings, context, applicationIcon);
 
+        LocalNotificationsPlugin.customLog("Finished creating Notification from NotificationSettings");
         return builder.build();
     }
 

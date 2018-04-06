@@ -13,6 +13,7 @@ class MyAppState extends State<MyApp> {
 
   String _imageUrl = 'https://flutter.io/images/catalog-widget-placeholder.png';
   String _text;
+  bool loggingEnabled = false;
 
   onNotificationClick(String payload) {
     setState(() {
@@ -27,7 +28,6 @@ class MyAppState extends State<MyApp> {
     LocalNotifications.removeNotification(0);
   }
 
-
   void removeNotify(String payload) async {
     await LocalNotifications.removeNotification(0);
   }
@@ -36,12 +36,12 @@ class MyAppState extends State<MyApp> {
       id: 'default_notification',
       name: 'Default',
       description: 'Grant this app the ability to show notifications',
-      importance: LocalNotifications.ANDROID_IMPORTANCE_DEFAULT
+      importance: AndroidNotificationImportance.DEFAULT
   );
 
-  Widget _getAddNotifCategoryButton() {
+  Widget _getAddNotificationChannelButton() {
     return new RaisedButton(
-      child: new Text('Create a notification category'),
+      child: new Text('Create a notification channel (Android 8.0+)'),
       onPressed: () async {
         await LocalNotifications.createAndroidNotificationChannel(
             channel: channel
@@ -50,14 +50,28 @@ class MyAppState extends State<MyApp> {
     );
   }
 
-  Widget _getRemoveNotifCategoryButton() {
+  Widget _getRemoveNotificationChannelButton() {
     return new RaisedButton(
-      child: new Text('Remove a notification category'),
+      child: new Text('Remove a notification channel (Android 8.0+)'),
       onPressed: () async {
         await LocalNotifications.removeAndroidNotificationChannel(
             channel: channel
         );
       },
+    );
+  }
+
+  Widget _enableLogging() {
+    return new Row(
+      children: <Widget>[
+        new Switch(value: loggingEnabled, onChanged: (val) async {
+          setState((){
+            loggingEnabled = val;
+          });
+          await LocalNotifications.setLogging(val);
+        }),
+        new Text('Enable or Disable logging')
+      ],
     );
   }
 
@@ -68,9 +82,11 @@ class MyAppState extends State<MyApp> {
           id: 0,
           title: 'Basic',
           content: 'some basic notification',
-          importance: LocalNotifications.ANDROID_IMPORTANCE_DEFAULT,
-          isOngoing: false,
-          channel: channel,
+          androidSettings: new AndroidSettings(
+            isOngoing: false,
+            channel: channel,
+            importance: AndroidNotificationImportance.DEFAULT
+          ),
           onNotificationClick: new NotificationAction(
               actionText: "some action",
               callback: removeNotify,
@@ -104,7 +120,9 @@ class MyAppState extends State<MyApp> {
               title: 'No swiping',
               content: 'Can\'t swipe this away',
               imageUrl: _imageUrl,
-              isOngoing: true
+              androidSettings: new AndroidSettings(
+                isOngoing: true
+              )
           );
         },
         child: new Text('Create undismissable notification')
@@ -232,6 +250,7 @@ class MyAppState extends State<MyApp> {
         body: new Center(
           child: new Column(
             children: <Widget>[
+              _enableLogging(),
               _getBasicNotification(),
               _getNotificationWithImage(),
               _getUndismissableNotification(),
@@ -240,8 +259,8 @@ class MyAppState extends State<MyApp> {
               _getNotificationWithCallbackAndPayloadInBackground(),
               _getNotificationWithMultipleActionsAndPayloads(),
               _getNotificationWithAnonymousFunctionAsCallback(),
-              _getAddNotifCategoryButton(),
-              _getRemoveNotifCategoryButton(),
+              _getAddNotificationChannelButton(),
+              _getRemoveNotificationChannelButton(),
               new Text(_text ?? "Click a notification with a payload to see the results here")
             ],
           ),

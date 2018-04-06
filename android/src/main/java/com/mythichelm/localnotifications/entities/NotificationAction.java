@@ -12,21 +12,21 @@ import java.util.Objects;
 public class NotificationAction {
     private String callbackFunctionName;
     public String actionText;
-    private String intentPayload;
+    private String payload;
     private boolean launchesApp;
     private static int currentId = 0;
 
-    public NotificationAction(String callbackFunctionName, String actionText, String intentPayload, boolean launchesApp) {
+    public NotificationAction(String callbackFunctionName, String actionText, String payload, boolean launchesApp) {
         this.callbackFunctionName = callbackFunctionName;
         this.actionText = actionText;
-        this.intentPayload = intentPayload;
+        this.payload = payload;
         this.launchesApp = launchesApp;
     }
 
     private boolean isEmptyAction() {
         return Objects.equals(this.callbackFunctionName, "")
                 && Objects.equals(this.actionText, "")
-                && Objects.equals(this.intentPayload, "");
+                && Objects.equals(this.payload, "");
     }
 
     public PendingIntent getIntent(Context context) {
@@ -53,7 +53,7 @@ public class NotificationAction {
     private void addActionsToIntent(Intent actionIntent) {
         if (!isEmptyAction() && actionIntent != null) {
             actionIntent.putExtra(LocalNotificationsPlugin.CALLBACK_KEY, callbackFunctionName);
-            actionIntent.putExtra(LocalNotificationsPlugin.PAYLOAD_KEY, intentPayload);
+            actionIntent.putExtra(LocalNotificationsPlugin.PAYLOAD_KEY, payload);
         }
     }
 }

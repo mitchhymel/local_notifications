@@ -1,5 +1,6 @@
 package com.mythichelm.localnotifications.factories;
 
+import com.mythichelm.localnotifications.LocalNotificationsPlugin;
 import com.mythichelm.localnotifications.entities.NotificationAction;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class NotificationSettingsFactory implements INotificationSettingsFactory {
     @Override
     public NotificationSettings createFromArguments(List<Object> arguments) {
+        LocalNotificationsPlugin.customLog("Creating NotificationSettings from arguments");
         HashMap<String, Object> map = (HashMap<String, Object>)arguments.get(0);
 
         NotificationSettings settings = new NotificationSettings();
@@ -22,10 +24,13 @@ public class NotificationSettingsFactory implements INotificationSettingsFactory
         settings.Body = (String)map.get("content");
         settings.ImageUrl = (String)map.get("imageUrl");
         settings.Ticker = (String)map.get("ticker");
-        settings.Priority = (int)map.get("importance");
-        settings.IsOngoing = (boolean)map.get("isOngoing");
         settings.Id = (int)map.get("id");
-        settings.Channel = (String)map.get("channel");
+
+        // get android specific settings
+        HashMap<String, Object> androidSettings = (HashMap<String, Object>)map.get("androidSettings");
+        settings.Priority = (int)androidSettings.get("importance");
+        settings.IsOngoing = (boolean)androidSettings.get("isOngoing");
+        settings.Channel = (String)androidSettings.get("channel");
 
         HashMap<String, Object> onNotifClickMap = (HashMap<String, Object>)map.get("onNotificationClick");
         settings.OnNotificationClick = getNotificationAction(onNotifClickMap);
@@ -33,6 +38,7 @@ public class NotificationSettingsFactory implements INotificationSettingsFactory
         List<Object> extraActionsList = (List<Object>)map.get("extraActions");
         settings.ExtraActions = getExtraActions(extraActionsList);
 
+        LocalNotificationsPlugin.customLog("Finished creating NotificationSettings from arguments");
         return settings;
     }
 
@@ -50,8 +56,8 @@ public class NotificationSettingsFactory implements INotificationSettingsFactory
     private NotificationAction getNotificationAction(HashMap<String, Object> map) {
         String callbackName = (String)map.get("callback");
         String actionText = (String)map.get("actionText");
-        String intentPayload = (String)map.get("intentPayload");
+        String payload = (String)map.get("payload");
         boolean launchesApp = (boolean)map.get("launchesApp");
-        return new NotificationAction(callbackName, actionText, intentPayload, launchesApp);
+        return new NotificationAction(callbackName, actionText, payload, launchesApp);
     }
 }

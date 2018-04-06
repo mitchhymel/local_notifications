@@ -30,6 +30,7 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
 
     @Override
     protected Bitmap doInBackground(String... params) {
+        LocalNotificationsPlugin.customLog("Starting GenerateLocalNotificationsTask");
         if (notificationSettings.ImageUrl == null || notificationSettings.ImageUrl.equals("")) {
             return null;
         }
@@ -57,7 +58,7 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
         NotificationManager notificationManager = getNotificationManager();
 
         if (notificationManager != null) {
-            LocalNotificationsPlugin.customLog("notificationManager.notify");
+            LocalNotificationsPlugin.customLog("Calling NotificationManager.notify");
             notificationManager.notify(notificationSettings.Id, notification);
         }
 

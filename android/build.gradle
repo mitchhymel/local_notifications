@@ -31,4 +31,9 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+}
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.8.1'
 }
