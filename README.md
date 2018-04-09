@@ -179,7 +179,9 @@ static const AndroidNotificationChannel channel = const AndroidNotificationChann
 );
 
 // Create the notification channel (this is a no-op on iOS and android <8.0 devices)
-// Only need to run this one time per App install, any calls after that will be a no-op
+// Only need to run this one time per App install, any calls after that will be a no-op at the native level
+// but will still need to use the platform channel. For this reason, avoid calling this except for the 
+// first time you need to create the channel.
 await LocalNotifications.createAndroidNotificationChannel(channel: channel);
 
 // Create your notification, providing the channel info
