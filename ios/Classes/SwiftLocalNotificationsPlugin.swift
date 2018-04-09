@@ -6,17 +6,19 @@ import UserNotifications
 public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotificationCenterDelegate {
     static var CREATE_NOTIFICATION = "local_notifications_createNotification"
     static var REMOVE_NOTIFICATION = "local_notifications_removeNotification"
+    static var SET_LOGGING = "local_notifications_setLogging"
     static var CHANNEL_NAME = "plugins/local_notifications"
     static var CALLBACK_KEY = "callback_key"
     static var PAYLOAD_KEY = "payload_key"
     static var PRESENT_WHILE_APP_OPEN_KEY = "present_while_app_open_key"
+    
+    static var loggingEnabled = false
     
     var channel = FlutterMethodChannel()
     
     init(channel: FlutterMethodChannel) {
         self.channel = channel
     }
-    
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: CHANNEL_NAME, binaryMessenger: registrar.messenger())
@@ -39,6 +41,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args : NSArray = call.arguments as! NSArray
+        SwiftLocalNotificationsPlugin.customLog(text: "handling method '\(call.method)'")
         if (call.method == SwiftLocalNotificationsPlugin.CREATE_NOTIFICATION) {
             createNotification(args: args)
             result(nil)
@@ -46,20 +49,13 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
             let notifId : Int = args[0] as! Int
             removeNotification(id: notifId)
             result(nil)
+        } else if (call.method == SwiftLocalNotificationsPlugin.SET_LOGGING) {
+            let value : Bool = args[0] as! Bool
+            SwiftLocalNotificationsPlugin.loggingEnabled = value
+            result(nil)
         } else {
-            customDebugPrint(text: "No method found with name '\(call.method)")
+            SwiftLocalNotificationsPlugin.customLog(text: "No method found with name '\(call.method)'")
             result(FlutterMethodNotImplemented)
-        }
-    }
-    struct LocalNotificationsError: Error {
-        let message: String
-        
-        init(_ message: String) {
-            self.message = message
-        }
-        
-        public var localizedDescription: String {
-            return message
         }
     }
     
@@ -68,6 +64,15 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         var payload = ""
         var callbackName = ""
         var launchesApp = true
+        
+        static func fromMap(map: [String:AnyObject]) -> NotificationAction {
+            return NotificationAction(
+                actionText: map["actionText"] as! String,
+                payload: map["payload"] as! String,
+                callbackName: map["callback"] as! String,
+                launchesApp: map["launchesApp"] as! Bool
+            )
+        }
     }
     
     struct Notification {
@@ -75,40 +80,32 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         var content = ""
         var imageUrl = "" // TODO: currently not used
         var ticker = ""
-        var importance = 0 // TODO: currently not used, does ios support this?
-        var isOngoing = false // TODO: currently not used, does ios support this?
         var id = 1
         var presentWhileAppOpen = true
     }
     
     func createNotification(args: NSArray) {
-        let title : String = args[0] as! String
-        let contentStr : String = args[1] as! String
-        let imageUrl : String = args[2] as! String
-        let ticker : String = args[3] as! String
-        let importance : Int = args[4] as! Int
-        let isOngoing : Bool = args[5] as! Bool
-        let id : Int = args[6] as! Int
-        let presentWhileAppOpen = args[15] as! Bool
-        let notification : Notification = Notification(title: title, content: contentStr, imageUrl: imageUrl, ticker: ticker, importance: importance, isOngoing: isOngoing, id: id, presentWhileAppOpen: presentWhileAppOpen)
+        let argsMap : NSDictionary = args[0] as! NSDictionary
         
-        let callbackName : String = args[7] as! String
-        let actionText : String = args[8] as! String
-        let intentPayload : String = args[9] as! String
-        let launchesApp : Bool = args[10] as! Bool
-        let onNotificationClick : NotificationAction = NotificationAction(actionText: actionText, payload: intentPayload, callbackName: callbackName, launchesApp: launchesApp)
+        let title : String = argsMap["title"] as! String
+        let contentStr : String = argsMap["content"] as! String
+        let imageUrl : String = argsMap["imageUrl"] as! String
+        let ticker : String = argsMap["ticker"] as! String
+        let id : Int = argsMap["id"] as! Int
+        let iOSSettingsMap : NSDictionary = argsMap["iOSSettings"] as! NSDictionary
+        let presentWhileAppOpen : Bool = iOSSettingsMap["presentWhileAppOpen"] as! Bool
         
-        let actionsCallbacks : NSArray = args[11] as! NSArray
-        let actionsTexts : NSArray = args[12] as! NSArray
-        let actionsIntentsPayload : NSArray = args[13] as! NSArray
-        let actionsLaunchesApp : NSArray = args[14] as! NSArray
+        let notification : Notification = Notification(title: title, content: contentStr, imageUrl: imageUrl, ticker: ticker, id: id, presentWhileAppOpen: presentWhileAppOpen)
+        
+        
+        let onNotificationClickMap : [String:AnyObject] = argsMap["onNotificationClick"] as! [String:AnyObject]
+        let onNotificationClick : NotificationAction = NotificationAction.fromMap(map: onNotificationClickMap)
+        
+        let extraActionsMaps : NSArray = argsMap["extraActions"] as! NSArray
         var extraActions : Array<NotificationAction> = []
-        for (index, _) in actionsCallbacks.enumerated() {
-            let callback : String = actionsCallbacks[index] as! String
-            let text : String = actionsTexts[index] as! String
-            let payload : String = actionsIntentsPayload[index] as! String
-            let launch : Bool = actionsLaunchesApp[index] as! Bool
-            let newAction : NotificationAction = NotificationAction(actionText: text, payload: payload, callbackName: callback, launchesApp: launch)
+        for (index, _) in extraActionsMaps.enumerated() {
+            let actionMap : [String:AnyObject] = extraActionsMaps[index] as! [String:AnyObject]
+            let newAction : NotificationAction = NotificationAction.fromMap(map: actionMap)
             extraActions.append(newAction)
         }
         
@@ -184,24 +181,24 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
             let callback : String = arrVal[0]
             let payload : String = arrVal[1]
             if (callback != "") {
-                customDebugPrint(text: "didReceive: calling \(callback)('\(payload)')")
+                SwiftLocalNotificationsPlugin.customLog(text: "didReceive: calling \(callback)('\(payload)')")
                 channel.invokeMethod(callback, arguments: payload)
             }
             else {
-                customDebugPrint(text: "didReceive: callback name was null or empty")
+                SwiftLocalNotificationsPlugin.customLog(text: "didReceive: callback name was null or empty")
             }
         }
         else {
-            customDebugPrint(text: "didReceive: value was null")
+            SwiftLocalNotificationsPlugin.customLog(text: "didReceive: value was null")
         }
         
         withCompletionHandler()
     }
     
-    func customDebugPrint(text : String) {
-        #if DEBUG
-            NSLog("LocalNotificationsPlugin: \(text)")
-        #endif
+    static func customLog(text : String) {
+        if (loggingEnabled) {
+            NSLog("LocalNotificationsPlugin: (iOS) \(text)")
+        }
     }
     
     
