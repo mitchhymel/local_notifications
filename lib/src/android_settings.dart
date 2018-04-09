@@ -26,27 +26,27 @@ class AndroidSettings {
   final AndroidNotificationImportance importance;
   final AndroidNotificationChannel channel;
   final bool isOngoing;
-  final List<int> vibratePattern;
+  //final List<int> vibratePattern;
 
   AndroidSettings({
     this.importance=AndroidNotificationImportance.HIGH,
     this.channel,
     this.isOngoing=false,
-    this.vibratePattern=const []
+    //this.vibratePattern=const []
   });
 
   const AndroidSettings._private({
     this.importance,
     this.channel,
     this.isOngoing,
-    this.vibratePattern
+    //this.vibratePattern
   });
 
   static const AndroidSettings DEFAULT = const AndroidSettings._private(
     importance: AndroidNotificationImportance.HIGH,
     channel: null,
     isOngoing: false,
-    vibratePattern: const []
+    //vibratePattern: const []
   );
 
   Map _toMapForPlatformChannel() {
@@ -54,7 +54,7 @@ class AndroidSettings {
       'isOngoing': isOngoing,
       'channel': channel == null ? '': channel.id,
       'importance': importance.val,
-      'vibratePattern': vibratePattern
+      //'vibratePattern': vibratePattern
     };
   }
 }
@@ -97,14 +97,14 @@ class AndroidNotificationChannel {
   final String name;
   final String description;
   final AndroidNotificationImportance importance;
-  final List<int> vibratePattern;
+  //final List<int> vibratePattern;
 
   const AndroidNotificationChannel({
     @required this.id,
     @required this.name,
     @required this.description,
     @required this.importance,
-    this.vibratePattern = const[],
+    //this.vibratePattern = const[],
   });
 
   Map _toMapForPlatformChannel() {
@@ -113,7 +113,7 @@ class AndroidNotificationChannel {
       'name': this.name,
       'description': this.description,
       'importance': this.importance.val,
-      'vibratePattern': this.vibratePattern,
+      //'vibratePattern': this.vibratePattern,
     };
   }
 }

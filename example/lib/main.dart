@@ -36,7 +36,7 @@ class MyAppState extends State<MyApp> {
       id: 'default_notification',
       name: 'Default',
       description: 'Grant this app the ability to show notifications',
-      importance: AndroidNotificationImportance.DEFAULT
+      importance: AndroidNotificationImportance.DEFAULT,
   );
 
   Widget _getAddNotificationChannelButton() {
@@ -86,7 +86,6 @@ class MyAppState extends State<MyApp> {
             isOngoing: false,
             channel: channel,
             importance: AndroidNotificationImportance.DEFAULT,
-            vibratePattern: [1000, 1000, 1000, 1000]
           ),
           onNotificationClick: new NotificationAction(
               actionText: "some action",
@@ -235,7 +234,19 @@ class MyAppState extends State<MyApp> {
               },
               payload: 'payload with anonymous function',
               callbackName: 'anonymousName'
-            )
+            ),
+            actions: [
+              new NotificationAction(
+                actionText: 'anon',
+                callback: (String payload) {
+                  setState(() {
+                    _text = payload;
+                  });
+                },
+                payload: 'payload from action with anonymous action',
+                callbackName: 'anonymousAction',
+              )
+            ]
           );
         }
     );

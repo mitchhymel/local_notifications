@@ -135,12 +135,12 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
                 String name = (String) map.get("name");
                 String description = (String) map.get("description");
                 int importance = (int) map.get("importance");
-                long[] vibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
-                        (ArrayList<Integer>)map.get("vibratePattern"));
+//                long[] vibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
+//                        (ArrayList<Integer>)map.get("vibratePattern"));
 
                 NotificationChannel channel = new NotificationChannel(channelId, name, importance);
                 channel.setDescription(description);
-                channel.setVibrationPattern(vibratePattern);
+                //channel.setVibrationPattern(vibratePattern);
                 notificationManager.createNotificationChannel(channel);
             }
         }
