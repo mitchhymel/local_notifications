@@ -1,3 +1,8 @@
+# [0.0.3] - April 8, 2018
+
+* Added setLogging method to enable/disable extra logging for help with debugging
+* Added support for Android 8.0+ with ability to create notification channels
+
 # [0.0.2] - April 3, 2018
 
 * createNotification parameter "id" is now required and no longer returns anything

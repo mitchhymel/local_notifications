@@ -60,7 +60,8 @@ An example how it should look like can be found [HERE](https://github.com/mitchh
 
 ## Send your first notification
 
-Sending a basic notification is simple
+Sending a basic notification is simple. 
+(If running on an Android 8.0+ device, see bottom section "Sending Notifications on Android 8.0+")
 
 ```
 await LocalNotifications.createNotification(
@@ -159,5 +160,35 @@ int id = await LocalNotifications.createNotification(
             launchesApp: false
         )
     ]
+);
+```
+
+
+## Sending Notifications on Android 8.0+
+
+For Android 8.0+, you must first create a Notification Channel and associate this channel with every notification you create,
+otherwise the notifications will not be shown. Read about them in the [Android SDK docs](https://developer.android.com/guide/topics/ui/notifiers/notifications.html#ManageChannels).
+
+```
+// Initialize your Notification channel object
+static const AndroidNotificationChannel channel = const AndroidNotificationChannel(
+      id: 'default_notification',
+      name: 'Default',
+      description: 'Grant this app the ability to show notifications',
+      importance: AndroidNotificationImportance.DEFAULT
+);
+
+// Create the notification channel (this is a no-op on iOS and android <8.0 devices)
+// Only need to run this one time per App install, any calls after that will be a no-op
+await LocalNotifications.createAndroidNotificationChannel(channel: channel);
+
+// Create your notification, providing the channel info
+await LocalNotifications.createNotification(
+    title: "Basic",
+    content: "Notification",
+    id: 0,
+    androidSettings: new AndroidSettings(
+        channel: channel
+    )
 );
 ```
