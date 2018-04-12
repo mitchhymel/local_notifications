@@ -175,7 +175,7 @@ static const AndroidNotificationChannel channel = const AndroidNotificationChann
       id: 'default_notification',
       name: 'Default',
       description: 'Grant this app the ability to show notifications',
-      importance: AndroidNotificationImportance.DEFAULT
+      importance: AndroidNotificationImportance.HIGH
 );
 
 // Create the notification channel (this is a no-op on iOS and android <8.0 devices)
@@ -192,5 +192,44 @@ await LocalNotifications.createNotification(
     androidSettings: new AndroidSettings(
         channel: channel
     )
+);
+```
+
+## Send a notification that shows a heads up notification on Android and iOS
+The below code is an example to have your notifications be shown as a heads up notification
+on iOS and all Android versions. Some of the values used in the constructors are the same as
+the constructors default values, but I'm being explicit here to show exactly what values
+you need to accomplish heads up notifications.
+
+```
+// Initialize your Notification channel object
+// For a heads up notification, the importance must be HIGH
+static const AndroidNotificationChannel channel = const AndroidNotificationChannel(
+      id: 'some_channel_id',
+      name: 'My app feature that requires notifications',
+      description: 'Grant this app the ability to show notifications for this app feature',
+      importance: AndroidNotificationImportance.HIGH, // default value for constructor
+      vibratePattern: AndroidVibratePatterns.DEFAULT, // default value for constructor
+);
+
+// Create the notification channel (this is a no-op on iOS and android <8.0 devices)
+// Only need to run this one time per channel to initialize, any calls after that will be a no-op at the native level
+// but will still need to use the platform channel. For this reason, avoid calling this except for the 
+// first time you need to create the channel.
+await LocalNotifications.createAndroidNotificationChannel(channel: channel);
+
+// Create your notification, providing the channel info
+await LocalNotifications.createNotification(
+    title: "Basic",
+    content: "Notification",
+    id: 0,
+    androidSettings: new AndroidSettings(
+        channel: channel,
+        priority: AndroidNotificationPriority.HIGH, // default value for constructor
+        vibratePattern: AndroidVibratePatterns.DEFAULT, // default value for constructor
+    ),
+    iOSSettings: new iOSSettings (
+        presentWhileAppOpen: true, // default value for constructor
+    ),
 );
 ```

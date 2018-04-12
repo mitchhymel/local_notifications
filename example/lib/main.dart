@@ -37,7 +37,7 @@ class MyAppState extends State<MyApp> {
       name: 'CustomNotificationChannel',
       description: 'Grant this app the ability to show notifications',
       importance: AndroidNotificationChannelImportance.HIGH,
-      vibratePattern: AndroidVibratePatterns.NONE,
+      vibratePattern: AndroidVibratePatterns.DEFAULT,
   );
 
   Widget _getAddNotificationChannelButton() {

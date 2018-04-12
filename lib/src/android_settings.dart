@@ -59,7 +59,6 @@ class AndroidSettings {
       'channel': channel == null ? '': channel.id,
       'priority': priority.val,
       'vibratePattern': vibratePattern,
-      'useDefaultVibratePattern': vibratePattern == AndroidVibratePatterns.DEFAULT,
     };
   }
 }
@@ -77,7 +76,7 @@ class AndroidSettings {
 /// versions before 26, the notification vibrate pattern must be set, even
 /// if that pattern means that the phone doesn't actually vibrate.
 class AndroidVibratePatterns {
-  static const List<int> DEFAULT = const [1];
+  static const List<int> DEFAULT = const [];
   static const List<int> NONE = const [0];
   const AndroidVibratePatterns._private();
 }
@@ -141,7 +140,7 @@ class AndroidNotificationChannel {
     @required this.id,
     @required this.name,
     @required this.description,
-    @required this.importance,
+    this.importance = AndroidNotificationChannelImportance.HIGH,
     this.vibratePattern = AndroidVibratePatterns.DEFAULT,
   });
 
@@ -152,7 +151,6 @@ class AndroidNotificationChannel {
       'description': this.description,
       'importance': this.importance.val,
       'vibratePattern': this.vibratePattern,
-      'useDefaultVibratePattern': vibratePattern == AndroidVibratePatterns.DEFAULT,
     };
   }
 }
