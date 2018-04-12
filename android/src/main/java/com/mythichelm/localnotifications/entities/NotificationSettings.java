@@ -20,4 +20,5 @@ public class NotificationSettings {
     public NotificationAction OnNotificationClick;
     public String Channel;
     public long[] VibratePattern;
+    public boolean UseDefaultVibratePattern;
 }

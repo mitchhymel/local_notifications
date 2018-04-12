@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.app.NotificationManager;
 
 import com.google.gson.Gson;
+import com.mythichelm.localnotifications.entities.NotificationChannelSettings;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
+import com.mythichelm.localnotifications.factories.INotificationChannelSettingsFactory;
 import com.mythichelm.localnotifications.factories.INotificationSettingsFactory;
+import com.mythichelm.localnotifications.factories.NotificationChannelSettingsFactory;
 import com.mythichelm.localnotifications.factories.NotificationFactory;
 import com.mythichelm.localnotifications.factories.NotificationSettingsFactory;
 import com.mythichelm.localnotifications.services.LocalNotificationsService;
@@ -48,6 +51,8 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
 
     private final Registrar registrar;
     private final INotificationSettingsFactory notificationSettingsFactory = new NotificationSettingsFactory();
+    private final INotificationChannelSettingsFactory notificationChannelSettingsFactory =
+            new NotificationChannelSettingsFactory();
 
     /**
      * Plugin registration.
@@ -131,18 +136,14 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = getNotificationManager();
             if (notificationManager != null) {
-                HashMap<String, Object> map = (HashMap<String, Object>)arguments.get(0);
-                LocalNotificationsPlugin.customLog("Creating a notification channel with params: " + new Gson().toJson(map));
-                String channelId = (String) map.get("id");
-                String name = (String) map.get("name");
-                String description = (String) map.get("description");
-                int importance = (int) map.get("importance");
-                long[] vibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
-                        (ArrayList<Integer>)map.get("vibratePattern"));
+                NotificationChannelSettings settings =
+                        notificationChannelSettingsFactory.createFromArguments(arguments);
 
-                NotificationChannel channel = new NotificationChannel(channelId, name, importance);
-                channel.setDescription(description);
-                channel.setVibrationPattern(vibratePattern);
+                NotificationChannel channel = new NotificationChannel(settings.Id, settings.Name, settings.Importance);
+                channel.setDescription(settings.Description);
+                if (!settings.UseDefaultVibratePattern) {
+                    channel.setVibrationPattern(settings.VibratePattern);
+                }
                 notificationManager.createNotificationChannel(channel);
             }
         }

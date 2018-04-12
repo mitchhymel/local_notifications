@@ -33,6 +33,7 @@ public class NotificationSettingsFactory implements INotificationSettingsFactory
         settings.Channel = (String)androidSettings.get("channel");
         settings.VibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
                 (ArrayList<Integer>)androidSettings.get("vibratePattern"));
+        settings.UseDefaultVibratePattern = (settings.VibratePattern.length == 0);
 
         HashMap<String, Object> onNotifClickMap = (HashMap<String, Object>)map.get("onNotificationClick");
         settings.OnNotificationClick = getNotificationAction(onNotifClickMap);

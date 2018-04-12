@@ -13,8 +13,12 @@ part of local_notifications;
 /// the notification is posted to.
 ///
 /// The value of [vibratePattern] determines how many times and how long
-/// the phone will vibrate when the notification is posted. From the android
-/// SDK documentation:
+/// the phone will vibrate when the notification is posted. Unless you have a
+/// need for custom vibration pattern, you can ignore this or use
+/// [AndroidVibratePatterns.DEFAULT] to fallback to the phone's default pattern.
+/// If you explicitly want no vibration, use [AndroidVibratePatterns.NONE].
+///
+/// From the android SDK documentation:
 /// 'Pass in an array of ints that are the durations for which to turn on or
 /// off the vibrator in milliseconds. The first value indicates the number of
 /// milliseconds to wait before turning the vibrator on. The next value
@@ -32,7 +36,7 @@ class AndroidSettings {
     this.priority=AndroidNotificationPriority.HIGH,
     this.channel,
     this.isOngoing=false,
-    this.vibratePattern=const [0]
+    this.vibratePattern=AndroidVibratePatterns.DEFAULT,
   });
 
   const AndroidSettings._private({
@@ -46,7 +50,7 @@ class AndroidSettings {
     priority: AndroidNotificationPriority.HIGH,
     channel: null,
     isOngoing: false,
-    vibratePattern: const [0]
+    vibratePattern: AndroidVibratePatterns.DEFAULT
   );
 
   Map _toMapForPlatformChannel() {
@@ -54,9 +58,28 @@ class AndroidSettings {
       'isOngoing': isOngoing,
       'channel': channel == null ? '': channel.id,
       'priority': priority.val,
-      'vibratePattern': vibratePattern
+      'vibratePattern': vibratePattern,
+      'useDefaultVibratePattern': vibratePattern == AndroidVibratePatterns.DEFAULT,
     };
   }
+}
+
+/// A helper class to provide values for [AndroidSettings.vibratePattern]
+///
+/// Using the value of [DEFAULT] for [AndroidSettings.vibratePattern] means
+/// that when the notification is posted, the phone will use it's default
+/// vibrate pattern.
+///
+/// Using the value of [NONE] for [AndroidSettings.vibratePattern] means that
+/// when the notification is posted, the phone will not vibrate. To be exact,
+/// the phone will wait to vibrate for 0 milliseconds and then not vibrate at all.
+/// In order for a notification to show up as a heads up notification on Android
+/// versions before 26, the notification vibrate pattern must be set, even
+/// if that pattern means that the phone doesn't actually vibrate.
+class AndroidVibratePatterns {
+  static const List<int> DEFAULT = const [1];
+  static const List<int> NONE = const [0];
+  const AndroidVibratePatterns._private();
 }
 
 /// Enum representing the Android IMPORTANCE enum
@@ -119,7 +142,7 @@ class AndroidNotificationChannel {
     @required this.name,
     @required this.description,
     @required this.importance,
-    this.vibratePattern = const[],
+    this.vibratePattern = AndroidVibratePatterns.DEFAULT,
   });
 
   Map _toMapForPlatformChannel() {
@@ -129,6 +152,7 @@ class AndroidNotificationChannel {
       'description': this.description,
       'importance': this.importance.val,
       'vibratePattern': this.vibratePattern,
+      'useDefaultVibratePattern': vibratePattern == AndroidVibratePatterns.DEFAULT,
     };
   }
 }

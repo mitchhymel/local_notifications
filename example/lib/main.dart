@@ -33,11 +33,11 @@ class MyAppState extends State<MyApp> {
   }
 
   static const AndroidNotificationChannel channel = const AndroidNotificationChannel(
-      id: 'default_notification3',
+      id: 'default_notification11',
       name: 'CustomNotificationChannel',
       description: 'Grant this app the ability to show notifications',
       importance: AndroidNotificationChannelImportance.HIGH,
-      vibratePattern: [0],
+      vibratePattern: AndroidVibratePatterns.NONE,
   );
 
   Widget _getAddNotificationChannelButton() {
