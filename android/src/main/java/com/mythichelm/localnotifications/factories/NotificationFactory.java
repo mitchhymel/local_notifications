@@ -32,7 +32,7 @@ public class NotificationFactory implements INotificationFactory {
                 .setPriority(settings.Priority);
                 //.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
 
-        //setVibratePattern(builder, settings);
+        setVibratePattern(builder, settings);
         setChannelId(builder, settings);
         setLargeIcon(builder, settings);
         setTicker(builder, settings);

@@ -28,11 +28,11 @@ public class NotificationSettingsFactory implements INotificationSettingsFactory
 
         // get android specific settings
         HashMap<String, Object> androidSettings = (HashMap<String, Object>)map.get("androidSettings");
-        settings.Priority = (int)androidSettings.get("importance");
+        settings.Priority = (int)androidSettings.get("priority");
         settings.IsOngoing = (boolean)androidSettings.get("isOngoing");
         settings.Channel = (String)androidSettings.get("channel");
-//        settings.VibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
-//                (ArrayList<Integer>)androidSettings.get("vibratePattern"));
+        settings.VibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
+                (ArrayList<Integer>)androidSettings.get("vibratePattern"));
 
         HashMap<String, Object> onNotifClickMap = (HashMap<String, Object>)map.get("onNotificationClick");
         settings.OnNotificationClick = getNotificationAction(onNotifClickMap);

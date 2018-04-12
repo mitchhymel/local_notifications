@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.app.NotificationManager;
 
+import com.google.gson.Gson;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 import com.mythichelm.localnotifications.factories.INotificationSettingsFactory;
 import com.mythichelm.localnotifications.factories.NotificationFactory;
@@ -131,16 +132,17 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
             NotificationManager notificationManager = getNotificationManager();
             if (notificationManager != null) {
                 HashMap<String, Object> map = (HashMap<String, Object>)arguments.get(0);
+                LocalNotificationsPlugin.customLog("Creating a notification channel with params: " + new Gson().toJson(map));
                 String channelId = (String) map.get("id");
                 String name = (String) map.get("name");
                 String description = (String) map.get("description");
                 int importance = (int) map.get("importance");
-//                long[] vibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
-//                        (ArrayList<Integer>)map.get("vibratePattern"));
+                long[] vibratePattern = LocalNotificationsPlugin.intArrayListToLongArray(
+                        (ArrayList<Integer>)map.get("vibratePattern"));
 
                 NotificationChannel channel = new NotificationChannel(channelId, name, importance);
                 channel.setDescription(description);
-                //channel.setVibrationPattern(vibratePattern);
+                channel.setVibrationPattern(vibratePattern);
                 notificationManager.createNotificationChannel(channel);
             }
         }
