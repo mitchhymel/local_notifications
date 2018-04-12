@@ -1,3 +1,6 @@
+# [0.0.4] - April 11, 2018
+* Added ability to set a custom vibrate pattern on Android
+
 # [0.0.3] - April 8, 2018
 
 * Added setLogging method to enable/disable extra logging for help with debugging
