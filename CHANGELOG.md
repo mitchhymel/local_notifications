@@ -1,3 +1,7 @@
+# [0.0.5] - April 12, 2018
+* Added support back for earlier Android versions. All versions supported by Flutter are supported by the plugin.
+* Removed deprecation and unchecked warnings that appeared when using the plugin.
+
 # [0.0.4] - April 11, 2018
 * Added ability to set a custom vibrate pattern on Android
 

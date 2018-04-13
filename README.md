@@ -9,7 +9,7 @@ LocalNotifications is an easy way to create notifications on both [Android](http
 ## Platforms
 
 Currently the following platforms are supported
-+ Android 6.0 (SDK version 23 or higher)
++ All Android versions that Flutter supports (4.1+ or SDK 16+)
 + iOS 10 or higher
 
 A goal is to bring this dependencies down as much as possible. 
@@ -23,6 +23,7 @@ A goal is to bring this dependencies down as much as possible.
 + [Android Only] Create Notification with an **Image**
 + [Android Only] Create Notification which is **Undismissable**
 + [Android Only] Set **Priority** / **Importance** of Notification
++ [Android Only] Create a Notification with a custom vibrate pattern
 + **Remove** Notification by id
 
 ## Installation
@@ -37,7 +38,7 @@ Then run `flutter packages get` to install the package.
 
 For iOS, There is an issue with the flutter framework (https://github.com/flutter/flutter/issues/16097) that will cause build errors in projects initialized with objective-c iOS code when using plugins written in swift (as is the case with this plugin). To get around this for an existing project, see [this comment](https://github.com/mitchhymel/local_notifications/issues/5#issuecomment-377344269). For new projects, just create the project using swift with ```flutter create -i swift```
 
-### Add Service to AndroidManifest
+### Add Service and Permission to AndroidManifest
 
 To have the notification run code in the background (on click of either the notification itself or its actions), you must add the LocalNotificationsService to your app's manifest.
 
@@ -57,6 +58,11 @@ Then add the following Tag to the `application` node
 
 An example how it should look like can be found [HERE](https://github.com/mitchhymel/local_notifications/blob/master/example/android/app/src/main/AndroidManifest.xml)
 
+To support Android 4.1 and 4.2, you also need to add the following to inside the `manifest` node.
+There should already be an existing permission for INTERNET, just add this below that.
+```
+<uses-permission android:name="android.permission.VIBRATE" android:maxSdkVersion="17"/>
+```
 
 ## Send your first notification
 
