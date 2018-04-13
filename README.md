@@ -61,7 +61,7 @@ An example how it should look like can be found [HERE](https://github.com/mitchh
 To support Android 4.1 and 4.2, you also need to add the following to inside the `manifest` node.
 There should already be an existing permission for INTERNET, just add this below that. For a full explanation why this is needed, see this [issue](https://github.com/mitchhymel/local_notifications/issues/10#issuecomment-380997029)
 ```
-<uses-permission android:name="android.permission.VIBRATE" android:maxSdkVersion="17"/>
+<uses-permission android:name="android.permission.VIBRATE" />
 ```
 
 ## Send your first notification
