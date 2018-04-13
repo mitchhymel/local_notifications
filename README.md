@@ -205,7 +205,7 @@ await LocalNotifications.createNotification(
 The below code is an example to have your notifications be shown as a heads up notification
 on iOS and all Android versions. Some of the values used in the constructors are the same as
 the constructors default values, but I'm being explicit here to show exactly what values
-you need to accomplish heads up notifications.
+you need.
 
 ```
 // Initialize your Notification channel object
