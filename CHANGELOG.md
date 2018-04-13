@@ -1,3 +1,6 @@
+# [0.0.6] - April 12, 2018
+* Fix the support library dependency
+
 # [0.0.5] - April 12, 2018
 * Added support back for earlier Android versions. All versions supported by Flutter are supported by the plugin.
 * Removed deprecation and unchecked warnings that appeared when using the plugin.
