@@ -24,9 +24,9 @@ public class NotificationAction {
     }
 
     private boolean isEmptyAction() {
-        return Objects.equals(this.callbackFunctionName, "")
-                && Objects.equals(this.actionText, "")
-                && Objects.equals(this.payload, "");
+        return "".equals(this.callbackFunctionName)
+                && "".equals(this.actionText)
+                && "".equals(this.payload);
     }
 
     public PendingIntent getIntent(Context context) {

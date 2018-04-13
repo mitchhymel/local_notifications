@@ -17,6 +17,11 @@ rootProject.allprojects {
         google()
         jcenter()
     }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'
+        }
+    }
 }
 
 apply plugin: 'com.android.library'
@@ -25,15 +30,17 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        minSdkVersion 23
+        minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
+
     }
 
 }
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.android.support:support-compat:27.1.1'
 }

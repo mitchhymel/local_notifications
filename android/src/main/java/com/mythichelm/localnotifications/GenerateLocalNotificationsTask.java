@@ -1,13 +1,11 @@
 package com.mythichelm.localnotifications;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Build;
+import android.support.v4.app.NotificationManagerCompat;
 
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 import com.mythichelm.localnotifications.factories.INotificationFactory;
@@ -55,13 +53,9 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
 
         notificationSettings.LargeIcon = result;
         Notification notification = createNotification();
-        NotificationManager notificationManager = getNotificationManager();
-
-        if (notificationManager != null) {
-            LocalNotificationsPlugin.customLog("Calling NotificationManager.notify");
-            notificationManager.notify(notificationSettings.Id, notification);
-        }
-
+        NotificationManagerCompat notificationManager = getNotificationCompatManager();
+        LocalNotificationsPlugin.customLog("Calling NotificationManager.notify");
+        notificationManager.notify(notificationSettings.Id, notification);
     }
 
     private Notification createNotification() {
@@ -69,8 +63,7 @@ public class GenerateLocalNotificationsTask extends AsyncTask<String, Void, Bitm
                 .createNotification(notificationSettings, this.mContext.get());
     }
 
-    private NotificationManager getNotificationManager() {
-        return (NotificationManager) this.mContext.get()
-                .getSystemService(Context.NOTIFICATION_SERVICE);
+    private NotificationManagerCompat getNotificationCompatManager() {
+        return NotificationManagerCompat.from(this.mContext.get());
     }
 }

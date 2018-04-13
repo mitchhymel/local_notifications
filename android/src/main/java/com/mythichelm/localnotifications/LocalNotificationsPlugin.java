@@ -2,12 +2,12 @@ package com.mythichelm.localnotifications;
 
 import android.app.NotificationChannel;
 import android.os.Build;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
 import android.app.NotificationManager;
 
-import com.google.gson.Gson;
 import com.mythichelm.localnotifications.entities.NotificationChannelSettings;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
 import com.mythichelm.localnotifications.factories.INotificationChannelSettingsFactory;
@@ -19,9 +19,7 @@ import com.mythichelm.localnotifications.services.LocalNotificationsService;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -128,7 +126,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
     }
 
     private void removeNotification(int id) {
-        NotificationManager notificationManager = getNotificationManager();
+        NotificationManagerCompat notificationManager = getNotificationManagerCompat();
         notificationManager.cancel(id);
     }
 
@@ -151,17 +149,23 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
 
     private void removeNotificationChannel(List<Object> arguments) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = getNotificationManager();
-            if (notificationManager != null) {
+            NotificationManager manager = getNotificationManager();
+            if (manager != null) {
                 String channelId = (String)arguments.get(0);
-                notificationManager.deleteNotificationChannel(channelId);
+                manager.deleteNotificationChannel(channelId);
             }
         }
     }
 
-    private NotificationManager getNotificationManager() {
-        return (NotificationManager) getActiveContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    private NotificationManagerCompat getNotificationManagerCompat() {
+        return NotificationManagerCompat.from(getActiveContext());
     }
+
+    private NotificationManager getNotificationManager() {
+        return (NotificationManager) getActiveContext()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
 
     public static boolean handleIntent(Intent intent) {
         if (intent == null) {
@@ -197,7 +201,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
     }
 
     private static boolean isNullOrEmpty(String callbackName) {
-        return callbackName == null || Objects.equals(callbackName, "");
+        return callbackName == null || "".equals(callbackName);
     }
 
     public static long[] intArrayListToLongArray(ArrayList<Integer> list) {
