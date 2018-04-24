@@ -6,6 +6,8 @@ LocalNotifications is an easy way to create notifications on both [Android](http
 
 [![pub package](https://img.shields.io/pub/v/local_notifications.svg)](https://pub.dartlang.org/packages/local_notifications)
 
+There is another Notification plugin [flutter_local_notifications](https://github.com/MaikuB/flutter_local_notifications) that has more features than this and the developer is very active. If this library doesn't have the features you need or isn't working for any reason, I suggest trying the other plugin.
+
 ## Platforms
 
 Currently the following platforms are supported
