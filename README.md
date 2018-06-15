@@ -1,12 +1,15 @@
 # LocalNotification Flutter Plugin
 
+## Plugin is no longer actively developed
+
+I currently don't have plans to continue active development of this plugin. If something is not working or a feature is missing, feel free to submit a pull request. Otherwise, check out [flutter_local_notifications](https://github.com/MaikuB/flutter_local_notifications).
+
+
 ## Introduction
 
 LocalNotifications is an easy way to create notifications on both [Android](https://developer.android.com/guide/topics/ui/notifiers/notifications.html) and [iOS](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/).
 
 [![pub package](https://img.shields.io/pub/v/local_notifications.svg)](https://pub.dartlang.org/packages/local_notifications)
-
-There is another Notification plugin [flutter_local_notifications](https://github.com/MaikuB/flutter_local_notifications) that has more features than this and the developer is very active. If this library doesn't have the features you need or isn't working for any reason, I suggest trying the other plugin.
 
 ## Platforms
 
