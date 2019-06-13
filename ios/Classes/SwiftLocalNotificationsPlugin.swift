@@ -120,7 +120,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         content.body = notification.content
         
         // TODO: support sound customization?
-        content.sound = UNNotificationSound.default()
+        content.sound = UNNotificationSound.default
         
         // TODO: content.attachments for image?
         var actionIndex : Int = 0
