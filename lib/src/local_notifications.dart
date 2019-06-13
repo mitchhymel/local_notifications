@@ -1,8 +1,7 @@
 part of local_notifications;
 
 class LocalNotifications {
-  static const MethodChannel _channel =
-  const MethodChannel(CHANNEL_NAME);
+  static const MethodChannel _channel = const MethodChannel(CHANNEL_NAME);
 
   static const String CHANNEL_NAME = 'plugins/local_notifications';
   static const String _createNotification =
@@ -45,7 +44,7 @@ class LocalNotifications {
   ///
   /// The value of [actions] determines the actions of the notification.
   /// Both android and ios support a limited number of actions.
-  static Future<Null> createNotification ({
+  static Future<Null> createNotification({
     @required String title,
     @required String content,
     @required int id,
@@ -56,12 +55,14 @@ class LocalNotifications {
     AndroidSettings androidSettings = AndroidSettings.DEFAULT,
     IOSSettings iOSSettings = IOSSettings.DEFAULT,
   }) async {
-
     _channel.setMethodCallHandler((MethodCall method) {
       var payload = method.arguments;
-      List<NotificationAction> actionsToCheck = []..add(onNotificationClick)..addAll(actions);
+      List<NotificationAction> actionsToCheck = []
+        ..add(onNotificationClick)
+        ..addAll(actions);
       for (NotificationAction action in actionsToCheck) {
-        String functionName = NotificationAction._getCallbackNameFromAction(action);
+        String functionName =
+            NotificationAction._getCallbackNameFromAction(action);
         if (method.method == functionName) {
           _log('After action is clicked. Calling $functionName("$payload")');
           action.callback(payload);
@@ -69,10 +70,12 @@ class LocalNotifications {
         }
       }
 
-      _log('After action is clicked. No method found matching name "${method.method}"');
+      _log(
+          'After action is clicked. No method found matching name "${method.method}"');
     });
 
-    List extraActionsAsMaps = actions.map((a) => a._toMapForPlatformChannel()).toList();
+    List extraActionsAsMaps =
+        actions.map((a) => a._toMapForPlatformChannel()).toList();
 
     Map argsMap = {
       'title': title,
@@ -99,20 +102,19 @@ class LocalNotifications {
   ///
   /// This is necessary for your app to be able to send notifications on
   /// Android 8.0+
-  static Future<Null> createAndroidNotificationChannel({
-    @required AndroidNotificationChannel channel
-  }) async {
+  static Future<Null> createAndroidNotificationChannel(
+      {@required AndroidNotificationChannel channel}) async {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      await _channel.invokeMethod(_createNotificationChannel, [channel._toMapForPlatformChannel()]);
+      await _channel.invokeMethod(
+          _createNotificationChannel, [channel._toMapForPlatformChannel()]);
     }
   }
 
   /// (Android only) Removes a notification channel
   ///
   /// This only works on Android 8.0+. Otherwise it is a no-op.
-  static Future<Null> removeAndroidNotificationChannel({
-    @required AndroidNotificationChannel channel
-  }) async {
+  static Future<Null> removeAndroidNotificationChannel(
+      {@required AndroidNotificationChannel channel}) async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       await _channel.invokeMethod(_removeNotificationChannel, [channel.id]);
     }

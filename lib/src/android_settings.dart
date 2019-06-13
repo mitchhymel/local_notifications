@@ -33,30 +33,25 @@ class AndroidSettings {
   final List<int> vibratePattern;
 
   AndroidSettings({
-    this.priority=AndroidNotificationPriority.HIGH,
+    this.priority = AndroidNotificationPriority.HIGH,
     this.channel,
-    this.isOngoing=false,
-    this.vibratePattern=AndroidVibratePatterns.DEFAULT,
+    this.isOngoing = false,
+    this.vibratePattern = AndroidVibratePatterns.DEFAULT,
   });
 
-  const AndroidSettings._private({
-    this.priority,
-    this.channel,
-    this.isOngoing,
-    this.vibratePattern
-  });
+  const AndroidSettings._private(
+      {this.priority, this.channel, this.isOngoing, this.vibratePattern});
 
   static const AndroidSettings DEFAULT = const AndroidSettings._private(
-    priority: AndroidNotificationPriority.HIGH,
-    channel: null,
-    isOngoing: false,
-    vibratePattern: AndroidVibratePatterns.DEFAULT
-  );
+      priority: AndroidNotificationPriority.HIGH,
+      channel: null,
+      isOngoing: false,
+      vibratePattern: AndroidVibratePatterns.DEFAULT);
 
   Map _toMapForPlatformChannel() {
     return {
       'isOngoing': isOngoing,
-      'channel': channel == null ? '': channel.id,
+      'channel': channel == null ? '' : channel.id,
       'priority': priority.val,
       'vibratePattern': vibratePattern,
     };
@@ -89,11 +84,16 @@ class AndroidNotificationChannelImportance {
   final int val;
   const AndroidNotificationChannelImportance._private(this.val);
 
-  static const AndroidNotificationChannelImportance MIN = const AndroidNotificationChannelImportance._private(1);
-  static const AndroidNotificationChannelImportance LOW = const AndroidNotificationChannelImportance._private(2);
-  static const AndroidNotificationChannelImportance DEFAULT = const AndroidNotificationChannelImportance._private(3);
-  static const AndroidNotificationChannelImportance HIGH = const AndroidNotificationChannelImportance._private(4);
-  static const AndroidNotificationChannelImportance MAX = const AndroidNotificationChannelImportance._private(5);
+  static const AndroidNotificationChannelImportance MIN =
+      const AndroidNotificationChannelImportance._private(1);
+  static const AndroidNotificationChannelImportance LOW =
+      const AndroidNotificationChannelImportance._private(2);
+  static const AndroidNotificationChannelImportance DEFAULT =
+      const AndroidNotificationChannelImportance._private(3);
+  static const AndroidNotificationChannelImportance HIGH =
+      const AndroidNotificationChannelImportance._private(4);
+  static const AndroidNotificationChannelImportance MAX =
+      const AndroidNotificationChannelImportance._private(5);
 }
 
 /// Enum representing the Android PRIORITY enum
@@ -104,11 +104,16 @@ class AndroidNotificationPriority {
   final int val;
   const AndroidNotificationPriority._private(this.val);
 
-  static const AndroidNotificationPriority MIN = const AndroidNotificationPriority._private(-2);
-  static const AndroidNotificationPriority LOW = const AndroidNotificationPriority._private(-1);
-  static const AndroidNotificationPriority DEFAULT = const AndroidNotificationPriority._private(0);
-  static const AndroidNotificationPriority HIGH = const AndroidNotificationPriority._private(1);
-  static const AndroidNotificationPriority MAX = const AndroidNotificationPriority._private(2);
+  static const AndroidNotificationPriority MIN =
+      const AndroidNotificationPriority._private(-2);
+  static const AndroidNotificationPriority LOW =
+      const AndroidNotificationPriority._private(-1);
+  static const AndroidNotificationPriority DEFAULT =
+      const AndroidNotificationPriority._private(0);
+  static const AndroidNotificationPriority HIGH =
+      const AndroidNotificationPriority._private(1);
+  static const AndroidNotificationPriority MAX =
+      const AndroidNotificationPriority._private(2);
 }
 
 /// Class that describes an Android Notification Channel (for android 8.0+)
