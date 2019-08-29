@@ -6,15 +6,14 @@ part of local_notifications;
 /// notification will show to the user if the app is in the forefront
 class IOSSettings {
   final bool presentWhileAppOpen;
+  final int date;
+
   IOSSettings({
-    this.presentWhileAppOpen = true
+    this.presentWhileAppOpen = true,
+    this.date
   });
 
-  const IOSSettings._private({this.presentWhileAppOpen});
-
-  static const IOSSettings DEFAULT = const IOSSettings._private(
-    presentWhileAppOpen: true
-  );
+  const IOSSettings._private({this.presentWhileAppOpen, this.date});
 
   Map _toMapForPlatformChannel() {
     return {

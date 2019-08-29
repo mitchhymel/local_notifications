@@ -82,6 +82,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         var ticker = ""
         var id = 1
         var presentWhileAppOpen = true
+        var date: Date = Date()
     }
     
     func createNotification(args: NSArray) {
@@ -94,9 +95,9 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         let id : Int = argsMap["id"] as! Int
         let iOSSettingsMap : NSDictionary = argsMap["iOSSettings"] as! NSDictionary
         let presentWhileAppOpen : Bool = iOSSettingsMap["presentWhileAppOpen"] as! Bool
-        
-        let notification : Notification = Notification(title: title, content: contentStr, imageUrl: imageUrl, ticker: ticker, id: id, presentWhileAppOpen: presentWhileAppOpen)
-        
+        let timestamp = iOSSettingsMap["date"] as! Int
+        let date : Date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+        let notification : Notification = Notification(title: title, content: contentStr, imageUrl: imageUrl, ticker: ticker, id: id, presentWhileAppOpen: presentWhileAppOpen, date: date)
         
         let onNotificationClickMap : [String:AnyObject] = argsMap["onNotificationClick"] as! [String:AnyObject]
         let onNotificationClick : NotificationAction = NotificationAction.fromMap(map: onNotificationClickMap)
@@ -146,8 +147,8 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         center.setNotificationCategories([localNotificationsCategory])
         content.categoryIdentifier = categoryIdentifier
         
-        let date = Date(timeIntervalSinceNow: 1)
-        let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        let date = notification.date
+        let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
         let request = UNNotificationRequest(identifier: String(notification.id), content: content, trigger: trigger)
         center.add(request)
