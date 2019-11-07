@@ -11,15 +11,15 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
     static var CALLBACK_KEY = "callback_key"
     static var PAYLOAD_KEY = "payload_key"
     static var PRESENT_WHILE_APP_OPEN_KEY = "present_while_app_open_key"
-    
+
     static var loggingEnabled = false
-    
+
     var channel = FlutterMethodChannel()
-    
+
     init(channel: FlutterMethodChannel) {
         self.channel = channel
     }
-    
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: CHANNEL_NAME, binaryMessenger: registrar.messenger())
         let instance = SwiftLocalNotificationsPlugin(channel: channel)
@@ -28,7 +28,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         center.delegate = instance
         requestPermissionToShowNotifications()
     }
-    
+
     static func requestPermissionToShowNotifications() {
         UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
             if granted {
@@ -38,7 +38,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
             }
         }
     }
-    
+
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args : NSArray = call.arguments as! NSArray
         SwiftLocalNotificationsPlugin.customLog(text: "handling method '\(call.method)'")
@@ -58,13 +58,13 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
             result(FlutterMethodNotImplemented)
         }
     }
-    
+
     struct NotificationAction {
         var actionText = ""
         var payload = ""
         var callbackName = ""
         var launchesApp = true
-        
+
         static func fromMap(map: [String:AnyObject]) -> NotificationAction {
             return NotificationAction(
                 actionText: map["actionText"] as! String,
@@ -74,7 +74,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
             )
         }
     }
-    
+
     struct Notification {
         var title = ""
         var content = ""
@@ -83,10 +83,10 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         var id = 1
         var presentWhileAppOpen = true
     }
-    
+
     func createNotification(args: NSArray) {
         let argsMap : NSDictionary = args[0] as! NSDictionary
-        
+
         let title : String = argsMap["title"] as! String
         let contentStr : String = argsMap["content"] as! String
         let imageUrl : String = argsMap["imageUrl"] as! String
@@ -94,13 +94,13 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         let id : Int = argsMap["id"] as! Int
         let iOSSettingsMap : NSDictionary = argsMap["iOSSettings"] as! NSDictionary
         let presentWhileAppOpen : Bool = iOSSettingsMap["presentWhileAppOpen"] as! Bool
-        
+
         let notification : Notification = Notification(title: title, content: contentStr, imageUrl: imageUrl, ticker: ticker, id: id, presentWhileAppOpen: presentWhileAppOpen)
-        
-        
+
+
         let onNotificationClickMap : [String:AnyObject] = argsMap["onNotificationClick"] as! [String:AnyObject]
         let onNotificationClick : NotificationAction = NotificationAction.fromMap(map: onNotificationClickMap)
-        
+
         let extraActionsMaps : NSArray = argsMap["extraActions"] as! NSArray
         var extraActions : Array<NotificationAction> = []
         for (index, _) in extraActionsMaps.enumerated() {
@@ -108,26 +108,26 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
             let newAction : NotificationAction = NotificationAction.fromMap(map: actionMap)
             extraActions.append(newAction)
         }
-        
+
         createIosNotification(notification: notification, onNotificationClick: onNotificationClick, extraActions: extraActions)
     }
-    
+
     private func createIosNotification(notification: Notification, onNotificationClick: NotificationAction, extraActions: Array<NotificationAction>) {
-        
+
         let center = UNUserNotificationCenter.current()
         let content = UNMutableNotificationContent()
         content.title = notification.title
         content.body = notification.content
-        
+
         // TODO: support sound customization?
         content.sound = UNNotificationSound.default()
-        
+
         // TODO: content.attachments for image?
         var actionIndex : Int = 0
         content.userInfo[String(actionIndex)] = [onNotificationClick.callbackName, onNotificationClick.payload]
         content.userInfo[SwiftLocalNotificationsPlugin.PRESENT_WHILE_APP_OPEN_KEY] = notification.presentWhileAppOpen
         actionIndex += 1
-        
+
         // add extra actions
         var notifActions : Array<UNNotificationAction> = []
         for action : NotificationAction in extraActions {
@@ -137,36 +137,37 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
             content.userInfo[String(actionIndex)] = [action.callbackName, action.payload]
             actionIndex += 1
         }
-        
+
         // Define Category
         let categoryIdentifier = "localNotifications"
         let localNotificationsCategory = UNNotificationCategory(identifier: categoryIdentifier, actions: notifActions, intentIdentifiers: [], options: [])
-        
+
         // Register Category
         center.setNotificationCategories([localNotificationsCategory])
         content.categoryIdentifier = categoryIdentifier
-        
+
         let date = Date(timeIntervalSinceNow: 1)
         let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
         let request = UNNotificationRequest(identifier: String(notification.id), content: content, trigger: trigger)
         center.add(request)
     }
-    
+
     func removeNotification(id: Int) {
         let center = UNUserNotificationCenter.current()
         center.removeDeliveredNotifications(withIdentifiers: [String(id)])
     }
-    
+
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        willPresent: UNNotification,
                                        withCompletionHandler: @escaping (UNNotificationPresentationOptions)->()) {
-        let showNotificationWhileAppOpen = willPresent.request.content.userInfo[SwiftLocalNotificationsPlugin.PRESENT_WHILE_APP_OPEN_KEY] as! Bool
+        let tmpShowNotificationWhileAppOpen = willPresent.request.content.userInfo[SwiftLocalNotificationsPlugin.PRESENT_WHILE_APP_OPEN_KEY] != nil ? willPresent.request.content.userInfo[SwiftLocalNotificationsPlugin.PRESENT_WHILE_APP_OPEN_KEY] : true
+        let showNotificationWhileAppOpen = tmpShowNotificationWhileAppOpen as! Bool
         if (showNotificationWhileAppOpen) {
             withCompletionHandler([.alert, .sound, .badge])
         }
     }
-    
+
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        didReceive response: UNNotificationResponse,
                                        withCompletionHandler: @escaping ()->()) {
@@ -174,7 +175,7 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         if (id == UNNotificationDefaultActionIdentifier) {
             id = String(0)
         }
-        
+
         let value = response.notification.request.content.userInfo[id]
         if (value != nil) {
             let arrVal = value as! Array<String>
@@ -191,15 +192,15 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         else {
             SwiftLocalNotificationsPlugin.customLog(text: "didReceive: value was null")
         }
-        
+
         withCompletionHandler()
     }
-    
+
     static func customLog(text : String) {
         if (loggingEnabled) {
             NSLog("LocalNotificationsPlugin: (iOS) \(text)")
         }
     }
-    
-    
+
+
 }
