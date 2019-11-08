@@ -177,6 +177,8 @@ public class SwiftLocalNotificationsPlugin: NSObject, FlutterPlugin, UNUserNotif
         }
 
         let value = response.notification.request.content.userInfo[id]
+        let toStringValue = (response.notification.request.content.userInfo.flatMap({ (key, value) -> String in return "\(key)=\(value)"}) as Array).joined(separator: ";")
+        SwiftLocalNotificationsPlugin.customLog(text: "didReceive data : " + toStringValue)
         if (value != nil) {
             let arrVal = value as! Array<String>
             let callback : String = arrVal[0]
