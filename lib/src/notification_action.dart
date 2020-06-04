@@ -17,19 +17,15 @@ class NotificationAction {
   final String payload;
   final bool launchesApp;
   final String callbackName; // only use when callback is an anonymous function
-  const NotificationAction({
-    @required this.actionText,
-    @required this.callback,
-    @required this.payload,
-    this.launchesApp = true,
-    this.callbackName
-  });
+  const NotificationAction(
+      {@required this.actionText,
+      @required this.callback,
+      @required this.payload,
+      this.launchesApp = true,
+      this.callbackName});
 
-  static const NotificationAction DEFAULT = const NotificationAction(
-      actionText: '',
-      callback: null,
-      payload: ''
-  );
+  static const NotificationAction DEFAULT =
+      const NotificationAction(actionText: '', callback: null, payload: '');
 
   Map _toMapForPlatformChannel() {
     return {

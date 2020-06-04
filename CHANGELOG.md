@@ -1,3 +1,8 @@
+# [0.1.0] - Jun 13, 2019
+* Upgrade flutter sdk version 2
+* fix ios build error #21
+* **Breaking change** Migrate from the deprecated original Android Support Library to AndroidX.
+
 # [0.0.6] - April 12, 2018
 * Fix the support library dependency
 

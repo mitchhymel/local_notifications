@@ -2,7 +2,7 @@ package com.mythichelm.localnotifications;
 
 import android.app.NotificationChannel;
 import android.os.Build;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationManagerCompat;
 import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
