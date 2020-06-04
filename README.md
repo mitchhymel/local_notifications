@@ -2,7 +2,7 @@
 
 ## Plugin is no longer actively developed
 
-I currently don't have plans to continue active development of this plugin. If something is not working or a feature is missing, feel free to submit a pull request. Otherwise, check out [flutter_local_notifications](https://github.com/MaikuB/flutter_local_notifications).
+I currently don't have plans to continue active development of this plugin. This plugin is discontinued on pub and can be considered effectively dead. If something is not working or a feature is missing, check out [flutter_local_notifications](https://github.com/MaikuB/flutter_local_notifications).
 
 
 ## Introduction
