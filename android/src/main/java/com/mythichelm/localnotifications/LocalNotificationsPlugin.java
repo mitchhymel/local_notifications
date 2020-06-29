@@ -2,11 +2,12 @@ package com.mythichelm.localnotifications;
 
 import android.app.NotificationChannel;
 import android.os.Build;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
 import android.app.NotificationManager;
+
+import androidx.core.app.NotificationManagerCompat;
 
 import com.mythichelm.localnotifications.entities.NotificationChannelSettings;
 import com.mythichelm.localnotifications.entities.NotificationSettings;
@@ -27,6 +28,9 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
+
+import android.os.Handler;
+import android.os.Looper;
 
 /**
  * LocalNotificationsPlugin
@@ -62,6 +66,7 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
         registrar.addNewIntentListener(plugin);
 
         LocalNotificationsService.setSharedChannel(channel);
+        LocalNotificationsService.setRegistrat(registrar);
     }
 
     private LocalNotificationsPlugin(Registrar registrar) {
@@ -80,11 +85,61 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
 
     @Override
     public boolean onNewIntent(Intent intent) {
-        return handleIntent(intent);
+        return handleIntent(intent, registrar);
+    }
+
+    // MethodChannel.Result wrapper that responds on the platform thread.
+    private static class MethodResultWrapper implements Result {
+        private Result methodResult;
+        private Handler handler;
+
+        MethodResultWrapper(Result result) {
+            methodResult = result;
+            handler = new Handler(Looper.getMainLooper());
+        }
+
+        @Override
+        public void success(final Object result) {
+            handler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            methodResult.success(result);
+                        }
+                    });
+        }
+
+        @Override
+        public void error(
+                final String errorCode, final String errorMessage, final Object errorDetails) {
+            handler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            methodResult.error(errorCode, errorMessage, errorDetails);
+                        }
+                    });
+        }
+
+        @Override
+        public void notImplemented() {
+            handler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            methodResult.notImplemented();
+                        }
+                    });
+        }
     }
 
     @Override
-    public void onMethodCall(MethodCall call, Result result) {
+    public void onMethodCall(MethodCall call, Result rawResult) {
+        MethodChannel.Result result = new MethodResultWrapper(rawResult);
+        if (registrar.activity() == null) {
+            result.error("no_activity", "local_notification plugin requires a foreground activity.", null);
+            return;
+        }
         List<Object> arguments = call.arguments();
         LocalNotificationsPlugin.customLog("In onMethodCall for method '" + call.method + "'");
         switch (call.method) {
@@ -167,16 +222,16 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
     }
 
 
-    public static boolean handleIntent(Intent intent) {
+    public static boolean handleIntent(Intent intent, Registrar registrar) {
         if (intent == null) {
             customLog("intent was null");
             return false;
         }
 
-        return checkAndInvokeCallback(intent);
+        return checkAndInvokeCallback(intent, registrar);
     }
 
-    private static boolean checkAndInvokeCallback(Intent intent) {
+    private static boolean checkAndInvokeCallback(Intent intent, Registrar registrar) {
         String callbackName = intent.getStringExtra(CALLBACK_KEY);
         String payload = intent.getStringExtra(PAYLOAD_KEY);
 
@@ -185,14 +240,19 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
             return false;
         }
 
-        return invokeCallback(callbackName, payload);
+        return invokeCallback(callbackName, payload, registrar);
     }
 
-    private static boolean invokeCallback(String callbackName, String payload) {
-        MethodChannel channel = LocalNotificationsService.getSharedChannel();
+    private static boolean invokeCallback(final String callbackName, final String payload, Registrar registrar) {
+        final MethodChannel channel = LocalNotificationsService.getSharedChannel();
         if (channel != null) {
             customLog(String.format("Invoking method %1$s('%2$s')", callbackName, payload));
-            channel.invokeMethod(callbackName, payload);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    channel.invokeMethod(callbackName, payload);
+                }
+            }, registrar);
             return true;
         } else {
             customLog("MethodChannel was null");
@@ -210,6 +270,10 @@ public class LocalNotificationsPlugin implements MethodCallHandler, NewIntentLis
             result[i] = list.get(i);
         }
         return result;
+    }
+
+    private static void runOnUiThread(Runnable runnable, Registrar registrar) {
+        registrar.activity().runOnUiThread(runnable);
     }
 
 }

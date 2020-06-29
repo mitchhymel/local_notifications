@@ -7,9 +7,11 @@ import android.util.Log;
 import com.mythichelm.localnotifications.LocalNotificationsPlugin;
 
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 public class LocalNotificationsService extends IntentService {
     private static MethodChannel sSharedChannel;
+    private static Registrar intentRegistrar;
 
     public LocalNotificationsService() {
         super("LocalNotificationsService");
@@ -17,6 +19,10 @@ public class LocalNotificationsService extends IntentService {
 
     public static MethodChannel getSharedChannel() {
         return sSharedChannel;
+    }
+
+    public static void setRegistrat(Registrar registrar) {
+        intentRegistrar = registrar;
     }
 
     public static void setSharedChannel(MethodChannel channel) {
@@ -31,6 +37,6 @@ public class LocalNotificationsService extends IntentService {
     @Override
     public void onHandleIntent(Intent intent) {
         LocalNotificationsPlugin.customLog("LocalNotificationsService handling intent in the background");
-        LocalNotificationsPlugin.handleIntent(intent);
+        LocalNotificationsPlugin.handleIntent(intent, intentRegistrar);
     }
 }
